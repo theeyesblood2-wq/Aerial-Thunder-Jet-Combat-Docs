@@ -1,173 +1,404 @@
-# Weapons and Targeting
+# Weapons & Targeting Guide
 
-This guide covers the included gun, rockets, missiles, flares, loadouts, pylons, automatic targeting, and manual targeting workflow.
+## Weapons Overview
 
-## Core Components
+Aerial Thunder features a comprehensive arsenal designed for air-to-air and air-to-ground combat:
 
-The combat stack belongs to `Jet_C_MT`:
+- **Gun (Cannon):** Instant-hit, unlimited ammo, requires precise aiming
+- **Rockets (Unguided):** Medium range, explosive splash damage, fast reload
+- **Missiles (Guided):** Long range, fire-and-forget capability, lock-on required
+- **Flares (Countermeasures):** Defense against incoming missiles
 
-- `UJetWeaponComponent` owns weapon state, ammo, firing, damage, projectile/trace behavior, and weapon audio/FX requests.
-- `UJetTargetingComponent` owns automatic forward targeting and lock state.
-- `UJetManualTargetingComponent` owns the manual TAD/capture targeting workflow.
-- `UJetPylonVisualsComponent` shows and hides mounted weapon meshes from the active loadout and remaining ammo.
-- `AJetMissile`, `AJetFlare`, and `AJetTracer` provide runtime weapon actors/effects.
-
-Damage and elimination are resolved through the replicated gameplay layer. Do not add duplicate client-side damage in a Blueprint.
-
-## Included Weapons
-
-| System | Description |
-|---|---|
-| Gun | Rapid-fire cannon with tracer, heat/state, range, damage, and release audio support. |
-| Rockets | Unguided air-to-ground projectiles with configurable launch and impact behavior. |
-| Missiles | Guided projectiles requiring a valid target lock. |
-| Flares | Defensive countermeasures used by players and AI. |
-
-### Default Inputs
-
-| Action | Default input |
-|---|---|
-| Fire gun | Left Mouse Button |
-| Fire rockets | Right Mouse Button |
-| Fire missile | Middle Mouse Button |
-| Deploy flares | X |
-
-## Loadout Presets
-
-The included runtime loadout names are:
-
-- `Full`
-- `AA_Gun`
-- `AG_Gun`
-- `GunOnly`
-- `Empty`
-
-Each `FJetLoadoutRuntimePreset` can enable or disable gun, AA missiles, AG rockets, and flares, then assign the starting ammunition for each system.
-
-Use `ApplyRuntimeLoadoutByName` or `ApplyJetLoadoutPresetByName` when applying a named configuration. The main menu/deployment system stores the selected loadout and applies it before the jet is spawned.
-
-## Ammo and Pylon Visuals
-
-`UJetPylonVisualsComponent` keeps the external stores synchronized with the runtime loadout.
-
-Important behavior:
-
-- disabled weapons are hidden
-- missile and rocket meshes are hidden when their ammo reaches zero
-- respawn/reload reapplies the current runtime state
-- pylon visuals are presentation only; the server weapon state remains authoritative
-
-When adding a new pylon, configure its mesh reference and weapon association in the aircraft Blueprint. Do not infer ammunition from mesh visibility.
+---
 
 ## Gun System
 
-The gun supports Blueprint-editable categories for:
+### Characteristics
+- **Ammo:** Unlimited
+- **Range:** Effective up to ~3 km
+- **Damage:** High per hit, requires multiple hits to eliminate
+- **Fire Rate:** 1,000-1,500 rounds per minute (depends on aircraft)
+- **Reload:** N/A (no reload needed)
+- **Audio:** Distinctive gun fire and impact sounds
 
-- damage, range, spread, and fire timing
-- tracer class and spawn behavior
-- weapon state, cooldown, and overheating
-- cockpit/shoulder, chase, and remote audio
-- release-tail sound with minimum fire time and anti-spam cooldown
+### Gun Aiming
 
-Remote gun audio uses distance checks and attenuation so nearby players hear the exterior weapon without receiving cockpit audio.
+#### Pipper (Gun Cross)
+The center of the HUD displays the gun pipper:
+- Red circle = Guns ready to fire
+- White circle = Gun is firing or overheating
 
-## Rockets
+#### Effective Aiming
+1. **Position behind target** — Best shot from 6 o'clock (directly behind)
+2. **Match target speed** — Position at same velocity as target
+3. **Lead your shots** — In Advanced mode, aim ahead of moving target
+4. **Close range is better** — Gun is more effective within 1 km
+5. **Trigger discipline** — Short bursts (3-5 seconds) are more accurate than sustained fire
 
-Rockets are unguided and use the firing aircraft's current transform and velocity-aware launch handling. Configure rocket class, ammo, cadence, damage, FX, and audio on `UJetWeaponComponent`.
+### Gun Mechanics
 
-In multiplayer, the owning client requests fire and the authoritative path creates the gameplay projectile. Local presentation compensates for fast aircraft motion so rockets do not appear to originate behind the jet.
+#### Firing
+**Key:** Left Mouse Button (hold to fire continuously)
 
-## Missiles
+- First shot lands instantly
+- Sustained fire causes barrel heat (HUD shows temperature)
+- Overheating causes accuracy degradation
+- Allow 5-10 seconds for cooling between bursts
 
-Missile launch requires a valid lock. The system supports:
+#### Accuracy
+- **Close range (< 500 m):** High accuracy, easy kills
+- **Medium range (500 m - 1 km):** Requires leading target, moderate difficulty
+- **Long range (> 1 km):** Difficult; only effective with perfect lead
 
-- missile class and ammo
-- lock validation
-- homing target assignment
-- launch safety and initial clearance
-- speed/velocity inheritance
-- trail and impact effects
-- warning audio and countermeasure interaction
+#### Tracer Rounds
+- Gun fires visible tracer rounds (glowing bullets)
+- Helps see where shots are impacting
+- Gives away position to enemies (audio + visual)
 
-Missile gameplay is authoritative. Cosmetic feedback may begin locally, but damage and replicated projectile state are not client-owned.
+#### Gun Convergence
+- Both gun barrels converge at ~500 meters
+- Maximum damage at convergence point
+- Spread increases at closer/farther ranges
 
-## Flares
+### Gun Tactics
 
-Flares are defensive countermeasures with configurable ammo, cooldown, launch transform, FX, and audio.
+1. **Get behind the target** — Gain positional advantage
+2. **Use scissors maneuvers** — Out-turn enemy and get behind them
+3. **Short bursts** — 3-5 second bursts; assess, reposition, repeat
+4. **Don't tunnel vision** — Keep checking six o'clock for incoming threats
+5. **Conserve ammo in multiplayer** — No reload, but overheat requires cooling
+6. **Switch weapons** — Use rockets/missiles to flush enemy; finish with gun
 
-Player and AI flare sounds use spatial attenuation and remote audible-distance limits. If a flare is audible from too far away, verify both the assigned Sound Attenuation asset and the remote distance on the jet audio settings.
+---
 
-## Automatic Targeting
+## Rocket System
 
-Automatic targeting uses `UJetTargetingComponent` and the forward aircraft view. It supports line trace or sphere sweep through `EJetTargetTraceMode`.
+### Characteristics
+- **Ammo:** Limited loadout (typically 8-16 rockets depending on aircraft)
+- **Range:** Effective 500 m - 5 km
+- **Damage:** Medium damage per rocket; splash radius ~50 meters
+- **Fire Rate:** One per trigger press; ~0.5 second reload between shots
+- **Target:** Unguided; requires lead aiming
+- **Audio:** Loud launch and impact
 
-Default controls:
+### Rocket Aiming
 
-| Action | Default input |
-|---|---|
-| Toggle automatic targeting | T |
-| Cycle next target | 1 |
-| Cycle previous target | 2 |
+#### Lead Aiming
+Rockets are unguided and travel in a ballistic arc:
+1. **Estimate distance** to target (HUD range finder helps)
+2. **Calculate lead** based on target velocity
+3. **Aim above target** to compensate for arc
+4. **Fire** and watch impact point
 
-Automatic mode provides the target widget and lock audio feedback. It supports aircraft, `AirTGT`, `GroundTGT`, and other valid radar/target actors.
+#### Effective Range
+- **500 m - 2 km:** Practical range for skilled players
+- **2 km - 5 km:** Long range; difficult to land hits
+- **Below 500 m:** Risk of blast damage to self
 
-## Manual Targeting
+### Rocket Mechanics
 
-Manual targeting is a separate workflow owned by `UJetManualTargetingComponent`.
+#### Firing
+**Key:** Right Mouse Button (one rocket per press)
 
-Default controls:
+- Takes 0.5 seconds between shots
+- Rockets travel at ~700 m/s
+- Flight time depends on distance and angle
+- HUD shows remaining rocket count
 
-| Action | Default input |
-|---|---|
-| Enter/leave manual targeting | 3 |
-| Toggle manual lock | 4 |
+#### Splash Damage
+- Explosion radius ~50 meters
+- Hits within radius take damage (even if direct miss)
+- Useful for area denial and forcing enemies to maneuver
 
-Manual mode uses the cockpit capture/TAD presentation. Its categories include:
+#### Rocket Resupply
+- Rockets resupply only on the ground at base
+- Typically refill during loadout changes between missions
 
-- capture component and render filtering
-- TAD screen configuration
-- manual aim and focus
-- target lock rules
-- zoom and performance settings
+### Rocket Tactics
 
-### Clean Mode Separation
+1. **Flush out enemies** — Fire rockets to force evasive maneuvers
+2. **Area denial** — Prevent enemy from using certain airspace
+3. **Follow-up to gun** — After gun passes, fire rockets while turning around
+4. **Ground targets** — Excellent for destroying stationary targets
+5. **Spread fire** — Fire multiple rockets at once from slightly different positions
+6. **Lead aggressively** — Rockets are slow; big leads required
 
-Automatic and manual targeting are mutually exclusive presentation modes:
+---
 
-- automatic mode uses the forward target widget and lock audio
-- manual mode uses the TAD/capture workflow
-- entering manual mode suppresses automatic lock UI and automatic targeting audio
-- leaving manual mode restores the normal automatic-targeting state when allowed
+## Missile System
 
-This prevents a hidden automatic widget from leaving lock audio active during manual targeting.
+### Characteristics
+- **Ammo:** Limited loadout (typically 4-8 missiles depending on aircraft)
+- **Range:** 2 km - 20 km
+- **Damage:** High; typically one hit elimination
+- **Fire Rate:** One per lock; ~2-5 second reload between shots
+- **Target:** Guided; requires target lock
+- **Audio:** Launch tone, lock tones, incoming missile warning
 
-## Adding a Weapon
+### Missile Lock & Targeting
 
-For a new weapon type:
+#### Lock-On Process
 
-1. Create the authoritative projectile or trace implementation.
-2. Add ammo and runtime state to `UJetWeaponComponent`.
-3. Add a loadout flag/count if the weapon is selectable.
-4. Add pylon visual mappings.
-5. Add cockpit, chase, and remote audio with attenuation.
-6. Add HUD feedback without making the HUD authoritative.
-7. Test standalone, listen server, joined client, respawn, and ammo depletion.
+1. **Select Target** — Use T (auto-lock) or manual targeting (3, 4 keys)
+2. **Establish Lock** — Keep crosshair on target for 2-4 seconds
+3. **Lock Tone** — Audio changes from search tone to lock tone
+4. **Ready to Fire** — HUD displays "LOCK" or missile count
+5. **Fire** — Press Middle Mouse Button
 
-## Multiplayer Checklist
+#### Auto-Targeting (T Key)
+- Automatically finds nearest/most threatening target
+- Maintains lock automatically during flight
+- Switches targets if original target is eliminated
+- Works in both air and close-range air-to-ground scenarios
 
-- Only the owning player sends fire input.
-- The server validates and owns gameplay damage.
-- Remote audio is spatial and distance-limited.
-- Projectiles remain visually attached to the launch point at high speed.
-- Ammo and pylon visibility remain correct after respawn.
-- A client cannot fire a disabled or empty weapon.
+#### Manual Targeting (Keys 3 & 4)
+- **Key 3:** Enter manual targeting mode
+- **Key 4:** Lock onto currently-aimed target
+- Useful for precision targeting
+- Requires steady aim on target
 
-## Screenshot Placeholders
+### Missile Mechanics
 
-- Weapon component Details panel
-- Loadout preset array
-- Automatic lock UI
-- Manual TAD targeting
-- Pylon visuals before and after ammo depletion
+#### Flight Phases
 
-See also: [Inputs](INPUTS.md), [HUD and Radar](HUD_AND_RADAR.md), and [AI System](AI_SYSTEM.md).
+1. **Boost Phase (0-3 seconds)**
+   - Rocket motor accelerates missile to max speed
+   - Missile travels in relatively straight line
+   - Cannot be evaded easily during this phase
+
+2. **Cruise Phase (3-10 seconds)**
+   - Missile seeks target via guided control
+   - Can maneuver and follow evasive targets
+   - Guidance continues as long as target is tracked
+
+3. **Terminal Phase (impact or loss of track)**
+   - If lock is broken, missile goes ballistic or detonates
+   - If target eliminated, missile self-detonates or hits debris
+   - Proximity detonation occurs within ~100 meters
+
+#### Missile Speed
+- **Initial speed:** ~800 m/s
+- **Cruise speed:** ~500-600 m/s
+- **Flight time to 10 km:** ~20 seconds
+
+#### Lock Break
+If target successfully evades:
+- Missile loses guidance
+- Goes ballistic or self-detonates
+- Time to self-detonation: ~30 seconds
+
+### Missile Defense (Flares)
+
+#### Deploying Flares (X Key)
+When locked by enemy missile:
+1. **Listen for warning tone** — Audio alert signals incoming missile
+2. **Press X** to deploy flares
+3. **Maneuver hard** — Turn sharply while deploying
+4. **Continue evasion** — Don't assume one flare salvo stopped missile
+
+#### Flare Mechanics
+- Flares are decoys that confuse missile guidance
+- Deploying while turning significantly increases evade chance
+- Multiple flares per deployment (typically 5-10)
+- Limited flare count per loadout (typically 32-64)
+- Flares refill at base or via loadout change
+
+#### Successful Evasion
+- Missile detonates near flare cloud instead of aircraft
+- Damage taken is reduced or nullified
+- Target is eliminated from current threat list
+
+### Missile Tactics
+
+1. **Lock before firing** — Never fire without established lock
+2. **Multiple missile salvos** — Fire 2-3 missiles quickly for better hit probability
+3. **Mix with gun fire** — Use missiles at range, then gun when closer
+4. **Break lock fast** — If enemy fires, immediately start hard maneuvers
+5. **Deploy flares proactively** — Don't wait for missile warning; deploy when you expect threat
+6. **Coordinate with teammates** — Use missiles to distract while teammates flank
+7. **Fuel efficiency** — Use missiles early before fuel runs low
+
+---
+
+## Weapon Loadouts
+
+### Loadout System
+Before each mission or multiplayer match:
+1. Select aircraft
+2. Choose weapon loadout
+3. Confirm and launch
+
+### Standard Loadouts
+
+| Loadout | Gun | Rockets | Missiles | Flares | Use Case |
+|---------|-----|---------|----------|--------|----------|
+| **Balanced** | Yes | 8 | 4 | 32 | Versatile, good for learning |
+| **Air-to-Air** | Yes | 4 | 8 | 48 | Anti-fighter focus |
+| **Air-to-Ground** | Yes | 16 | 2 | 16 | Ground target specialist |
+| **Explosive** | Yes | 12 | 6 | 24 | Maximum firepower |
+| **Defensive** | Yes | 4 | 4 | 64 | Survival-focused |
+
+### Weapon Resupply
+- Ammunition refills at base between missions
+- During multiplayer matches, loadout is fixed
+- Some extended missions may have mid-mission refuel/resupply points
+
+---
+
+## Targeting System
+
+### Radar Targeting
+
+#### Radar Lock
+- **Range:** 0-20 km (depending on radar mode)
+- **Update rate:** 2-5 Hz (realistic radar sweep)
+- **Lock time:** 2-4 seconds
+
+#### Radar Modes
+1. **Pulse Search** — Searches wide area, slow update
+2. **Pulse Doppler** — Detects moving targets, ignores stationary
+3. **Radarnet** (Multiplayer) — Shared radar with teammates
+
+### Visual Targeting
+
+#### Cockpit View Targeting
+- Limited field of view makes targeting difficult
+- Requires precise positioning
+- More immersive
+
+#### Third-Person Targeting
+- Wide field of view aids target acquisition
+- Easier to see enemy maneuvers
+- Recommended for combat
+
+### Target Cycling
+
+#### Next Target (Key 1)
+- Cycles to next available target (nearest or most threatening)
+- Displays target info on HUD
+- Initiates lock sequence
+
+#### Previous Target (Key 2)
+- Cycles to previous target
+- Useful if you want to re-engage previous enemy
+
+### Target Information
+
+When a target is locked, HUD displays:
+- **Target Call Sign** — Name/identifier
+- **Range** — Distance in meters
+- **Bearing** — Direction (0-360 degrees)
+- **Altitude** — Target altitude above ground
+- **Speed** — Knots
+- **Threat Level** — Color-coded (green=low, yellow=medium, red=high)
+
+---
+
+## Targeting Tactics
+
+1. **Multi-target engagement** — Cycle targets to keep enemy guessing
+2. **Lock and forget** — Fire missile, lock new target immediately
+3. **Cross-talk prevention** — Don't let enemy get tone on you while you're locking
+4. **Maneuver into lock** — Position while locking; be ready to launch
+5. **Break lock early** — If you detect threat, break lock and evade
+6. **Use teammates' callouts** — In multiplayer, teammates call out targets
+
+---
+
+## Ground Targets
+
+### Ground Target Types
+
+#### Air Defense (SAM)
+- **Threat:** Launches missiles at aircraft
+- **Engagement:** Use rockets/missiles or gun from standoff distance
+- **Tactic:** Approach from side or rear; avoid head-on
+
+#### Armored Vehicle
+- **Threat:** Limited threat to air targets
+- **Engagement:** Gun, rockets, or missiles effective
+- **Tactic:** Strafe runs or dive bombing
+
+#### Communication Facility
+- **Threat:** None; soft target
+- **Engagement:** Any weapon effective
+- **Tactic:** Single rocket or burst of gun fire sufficient
+
+#### Airfield/Base
+- **Threat:** Air defense systems
+- **Engagement:** Multiple weapon passes may be required
+- **Tactic:** Attack low and fast to avoid air defense
+
+### Ground Attack Procedures
+
+1. **Identify target** — Radar or visual confirmation
+2. **Plan approach** — Note air defense locations
+3. **Optimize altitude** — Descend to optimal weapon range
+4. **Line up attack run** — Nose on target
+5. **Acquire lock or aim** — Weapons ready
+6. **Fire** — Launch weapons
+7. **Break away** — Climb to safety immediately
+8. **Assess impact** — Did target survive? Plan second pass if needed
+
+---
+
+## Weapon Tips & Tricks
+
+1. **Gun is your primary** — Never run out of ammo
+2. **Rockets for softening** — Use to force maneuvers and spread damage
+3. **Missiles for finishers** — Save missiles for confirmed kills
+4. **Mix it up** — Alternate weapon types to keep enemy confused
+5. **Lead shots accurately** — Practice lead aiming in arcade mode first
+6. **Protect your six** — Always check behind for incoming fire
+7. **Flares aren't free** — Use flares wisely; they're limited
+8. **Teamwork matters** — In multiplayer, coordinate missile saturation attacks
+9. **Know your range** — Practice judging distance for accurate leads
+10. **Practice in training** — Use practice missions to hone targeting skills
+
+---
+
+## Weapon Troubleshooting
+
+### Missiles Won't Lock
+**Cause:** Target outside lock range or obscured
+**Solution:**
+1. Verify target is in range (usually < 20 km)
+2. Ensure line of sight to target
+3. Move closer and try again
+
+### Gun Feels Inaccurate
+**Cause:** Flying too fast or not leading correctly
+**Solution:**
+1. Slow down to improve aim
+2. Practice lead aiming (aim ahead of target)
+3. Use short, controlled bursts
+4. Try different camera angle
+
+### Flares Don't Stop Missiles
+**Cause:** Deploying flares too late or not maneuvering
+**Solution:**
+1. Deploy flares as soon as lock warning sounds
+2. Execute hard maneuver while deploying
+3. Deploy multiple times if needed
+4. Gain altitude to increase separation
+
+### Can't Find Targets with Radar
+**Cause:** Targets at edge of radar range or hidden by terrain
+**Solution:**
+1. Switch radar modes (pulse vs. doppler)
+2. Fly to higher altitude for better radar coverage
+3. Use visual targeting (look around)
+4. Maneuver to better position
+
+---
+
+## Next Steps
+
+- **Master the radar:** [HUD & Radar](HUD_AND_RADAR.md)
+- **Learn dogfighting:** [AI System](AI_SYSTEM.md)
+- **Flight fundamentals:** [Flight & Cameras](FLIGHT_AND_CAMERAS.md)
+- **Complete missions:** [Mission System](MISSION_SYSTEM.md)
+
+---
+
+**Arm your aircraft. Lock your targets. Dominate the engagement.**
