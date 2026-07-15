@@ -1,8 +1,8 @@
 ﻿# Feature Gallery
 
-This page is the documentation index for screenshots and short clips from the supplied Aerial Thunder project. Add final media from the Fab-ready build using the suggested names below.
+This page showcases screenshots and feature examples captured directly from the supplied Aerial Thunder project.
 
-> Use only media captured from the shipped project. Do not use concept images to imply a feature that is not included.
+> All media shown was captured from the shipped project. No concept images are used to represent features that are not included.
 
 ## Flight
 
