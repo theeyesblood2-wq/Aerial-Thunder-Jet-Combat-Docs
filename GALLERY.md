@@ -131,6 +131,302 @@ The gallery should not advertise dedicated servers, CTF, King of the Hill, ranke
 - [Mission System](MISSION_SYSTEM.md)
 - [Multiplayer](MULTIPLAYER.md)
 
+## Curated Visual Gallery
+
+### Gameplay Showcase
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_1.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_1.png" width="400" alt="Cockpit View 1">
+      </a>
+      <p><strong>Cockpit View 1</strong><br/>F-16 cockpit with working HUD</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Chase_Over_Terrains.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Chase_Over_Terrains.png" width="400" alt="Chase Over Terrain">
+      </a>
+      <p><strong>Chase Over Terrain</strong><br/>High-speed pursuit through terrain</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Shoulder.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Shoulder.png" width="400" alt="Shoulder Camera">
+      </a>
+      <p><strong>Shoulder Camera</strong><br/>Third-person camera view</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Gear_Down.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Gear_Down.png" width="400" alt="Gear Down Landing">
+      </a>
+      <p><strong>Gear Down Landing</strong><br/>Landing approach with gear extended</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_View_1.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_View_1.png" width="400" alt="Flight View 1">
+      </a>
+      <p><strong>Flight View 1</strong><br/>Scenic aerial perspective</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Water_FX_1.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Water_FX_1.png" width="400" alt="Water Effects">
+      </a>
+      <p><strong>Water Effects 1</strong><br/>Low-altitude water interaction</p>
+    </td>
+  </tr>
+</table>
+
+### Weapons and FX
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Jet_Lock_TGTs_Fire_Missile.png">
+        <img src="Images/gallery/In_Game_More/Jet_Lock_TGTs_Fire_Missile.png" width="400" alt="Missile Lock and Fire">
+      </a>
+      <p><strong>Missile Lock & Fire</strong><br/>Target lock with missile launch</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Jet_Lock_TGTs_Ground_Fire_Gun.png">
+        <img src="Images/gallery/In_Game_More/Jet_Lock_TGTs_Ground_Fire_Gun.png" width="400" alt="Ground Target Gun">
+      </a>
+      <p><strong>Ground Target Gun</strong><br/>Engaging ground targets with gun fire</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Jet_Exhaust_1.png">
+        <img src="Images/gallery/In_Game_More/Jet_Exhaust_1.png" width="400" alt="Exhaust Effect">
+      </a>
+      <p><strong>Exhaust Effect</strong><br/>Jet engine exhaust visualization</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Jet_Flares.png">
+        <img src="Images/gallery/In_Game_More/Jet_Flares.png" width="400" alt="Flare Deployment">
+      </a>
+      <p><strong>Flare Deployment</strong><br/>Defensive countermeasures</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Jet_Trails_1.png">
+        <img src="Images/gallery/In_Game_More/Jet_Trails_1.png" width="400" alt="Vapor Trails">
+      </a>
+      <p><strong>Vapor Trails</strong><br/>High-G maneuver trails</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Water_Effect_1.png">
+        <img src="Images/gallery/In_Game_More/Water_Effect_1.png" width="400" alt="Water FX">
+      </a>
+      <p><strong>Water Effects</strong><br/>Low-level water spray</p>
+    </td>
+  </tr>
+</table>
+
+### Tactical Systems
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_View_Radar_1.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_View_Radar_1.png" width="400" alt="Radar Display 1">
+      </a>
+      <p><strong>Radar Display 1</strong><br/>Tactical radar in cockpit view</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Tactical/In_Game_TAD_Lock_1.png">
+        <img src="Images/gallery/In_Game_Tactical/In_Game_TAD_Lock_1.png" width="400" alt="TAD Lock 1">
+      </a>
+      <p><strong>TAD Lock 1</strong><br/>Tactical air display targeting</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_HUD.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_HUD.png" width="400" alt="HUD Display">
+      </a>
+      <p><strong>HUD Display</strong><br/>Complete heads-up display</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_TGT_Lock_Missile.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_TGT_Lock_Missile.png" width="400" alt="Target Lock Missile">
+      </a>
+      <p><strong>Target Lock Missile</strong><br/>Missile lock indicator</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/Jet_TAD_1.png">
+        <img src="Images/gallery/In_Game_More/Jet_TAD_1.png" width="400" alt="TAD System 1">
+      </a>
+      <p><strong>TAD System 1</strong><br/>Tactical display system</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/AI_Lock.png">
+        <img src="Images/gallery/In_Game_More/AI_Lock.png" width="400" alt="AI Lock Simulation">
+      </a>
+      <p><strong>AI Lock</strong><br/>AI target acquisition</p>
+    </td>
+  </tr>
+</table>
+
+### AI Combat
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_AI_Fire_Gun.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_AI_Fire_Gun.png" width="400" alt="AI Gun Attack">
+      </a>
+      <p><strong>AI Gun Attack</strong><br/>Enemy AI engaging with gun fire</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_AI_Fire_Gun_On_My_Six_1.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_AI_Fire_Gun_On_My_Six_1.png" width="400" alt="AI On Six">
+      </a>
+      <p><strong>AI On Six</strong><br/>Enemy positioned on player's six</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_More/AI_Chase_Fire_Missile_1.png">
+        <img src="Images/gallery/In_Game_More/AI_Chase_Fire_Missile_1.png" width="400" alt="AI Missile Attack">
+      </a>
+      <p><strong>AI Missile Attack</strong><br/>AI launching missiles</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_View_Dogfight_AI_Fire_Gun.png">
+        <img src="Images/gallery/In_Game_Showcase/In_Game_Jet_Cockpit_View_Dogfight_AI_Fire_Gun.png" width="400" alt="Dogfight AI Gun">
+      </a>
+      <p><strong>Dogfight AI Gun</strong><br/>AI gunfire from cockpit view</p>
+    </td>
+  </tr>
+</table>
+
+### Multiplayer
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Private_Host.png">
+        <img src="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Private_Host.png" width="400" alt="Private Host">
+      </a>
+      <p><strong>Private Host</strong><br/>Host private match screen</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Deployment_Deploy.png">
+        <img src="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Deployment_Deploy.png" width="400" alt="Deploy">
+      </a>
+      <p><strong>Deploy</strong><br/>Player deployment screen</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Public.png">
+        <img src="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Public.png" width="400" alt="Public Lobby">
+      </a>
+      <p><strong>Public Lobby</strong><br/>Public multiplayer sessions</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Enter.png">
+        <img src="Images/gallery/In_Game_UI_Multiplayer/Multiplayer_Enter.png" width="400" alt="Multiplayer Menu">
+      </a>
+      <p><strong>Multiplayer Menu</strong><br/>Main multiplayer options</p>
+    </td>
+  </tr>
+</table>
+
+### Menus and Settings
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Select/AT_FirstLaunch_Logo.png">
+        <img src="Images/gallery/In_Game_UI_Select/AT_FirstLaunch_Logo.png" width="400" alt="Launch Logo">
+      </a>
+      <p><strong>Launch Logo</strong><br/>First launch screen</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Select/Singleplayer.png">
+        <img src="Images/gallery/In_Game_UI_Select/Singleplayer.png" width="400" alt="Singleplayer">
+      </a>
+      <p><strong>Singleplayer</strong><br/>Game mode selection</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Select/Select_Aircraft.png">
+        <img src="Images/gallery/In_Game_UI_Select/Select_Aircraft.png" width="400" alt="Aircraft Selection">
+      </a>
+      <p><strong>Aircraft Selection</strong><br/>Choose your fighter jet</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Settings/In_Game_Settings_Visual.png">
+        <img src="Images/gallery/In_Game_UI_Settings/In_Game_Settings_Visual.png" width="400" alt="Visual Settings">
+      </a>
+      <p><strong>Visual Settings</strong><br/>Graphics configuration</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Select/Select_AI_Difficulty_Normal.png">
+        <img src="Images/gallery/In_Game_UI_Select/Select_AI_Difficulty_Normal.png" width="400" alt="AI Difficulty Normal">
+      </a>
+      <p><strong>AI Difficulty</strong><br/>Difficulty selection menu</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/In_Game_UI_Settings/In_Game_Settings_Controls.png">
+        <img src="Images/gallery/In_Game_UI_Settings/In_Game_Settings_Controls.png" width="400" alt="Controls">
+      </a>
+      <p><strong>Controls Settings</strong><br/>Input configuration</p>
+    </td>
+  </tr>
+</table>
+
+### Technical Overview
+<table>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/Blueprints_Panels/Jet_Movement.png">
+        <img src="Images/gallery/Blueprints_Panels/Jet_Movement.png" width="400" alt="Jet Movement">
+      </a>
+      <p><strong>Jet Movement</strong><br/>Movement component blueprint</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/Blueprints_Panels/Jet_Weapons.png">
+        <img src="Images/gallery/Blueprints_Panels/Jet_Weapons.png" width="400" alt="Jet Weapons">
+      </a>
+      <p><strong>Jet Weapons</strong><br/>Weapons system blueprint</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/Blueprints_Panels/Jet_TacticalRadar.png">
+        <img src="Images/gallery/Blueprints_Panels/Jet_TacticalRadar.png" width="400" alt="Tactical Radar">
+      </a>
+      <p><strong>Tactical Radar</strong><br/>Radar system setup</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/Blueprints_Panels/Jet_AI.png">
+        <img src="Images/gallery/Blueprints_Panels/Jet_AI.png" width="400" alt="Jet AI">
+      </a>
+      <p><strong>Jet AI</strong><br/>AI pilot component blueprint</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/EOS_Setup/Enable_Socket_Subsystem_EOS.png">
+        <img src="Images/gallery/EOS_Setup/Enable_Socket_Subsystem_EOS.png" width="400" alt="EOS Setup">
+      </a>
+      <p><strong>EOS Setup</strong><br/>Enable socket subsystem for online play</p>
+    </td>
+    <td style="width: 420px; text-align: center;">
+      <a href="Images/gallery/Blueprints_Panels/AT_GM.png">
+        <img src="Images/gallery/Blueprints_Panels/AT_GM.png" width="400" alt="Game Mode">
+      </a>
+      <p><strong>Game Mode</strong><br/>Game mode configuration</p>
+    </td>
+  </tr>
+</table>
+
 ## Included images
 
 Below are the images located in Images/gallery grouped by subfolder. Click any filename to open the image in the repository.
@@ -157,7 +453,7 @@ Below are the images located in Images/gallery grouped by subfolder. Click any f
 - [Jet_Weapons_Actors.png](Images/gallery/Blueprints_Panels/Jet_Weapons_Actors.png)
 
 ### EOS_Setup
-- [Enable SocketSubSystemEOS.png](Images/gallery/EOS_Setup/Enable SocketSubSystemEOS.png)
+- [Enable_Socket_Subsystem_EOS.png](Images/gallery/EOS_Setup/Enable_Socket_Subsystem_EOS.png)
 - [Enable_SubSystem.png](Images/gallery/EOS_Setup/Enable_SubSystem.png)
 - [Subsystem_EOS.png](Images/gallery/EOS_Setup/Subsystem_EOS.png)
 
