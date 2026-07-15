@@ -1,761 +1,241 @@
-# Troubleshooting Guide
+# Troubleshooting
 
-## Getting Help
+This guide covers known setup and runtime checks for the supplied Unreal Engine 5.7 project.
 
-This guide covers common issues and solutions. If your issue isn't listed, check:
-- Relevant system guide (Flight, Weapons, Multiplayer, etc.)
-- [Settings Reference](SETTINGS_REFERENCE.md) for configuration issues
-- [Quick Start](QUICK_START.md) for basic setup
+## Start With the Log
 
----
+Editor and packaged builds write logs under the project's `Saved/Logs` directory. For multiplayer problems, collect the host and joined-client logs from the same short test.
 
-## Installation & Startup Issues
+Record:
 
-### Project Won't Open
+- Test mode: offline, private, or public EOS
+- Host and joined-player roles
+- Map and selected loadout
+- Approximate FPS
+- The exact action that failed
+- Whether the problem happened before or after respawn
 
-**Symptom:** UE 5.7 won't open the Aerial Thunder project
+## Build and Packaging
 
-**Possible Causes & Solutions:**
+### C++ compilation fails
 
-1. **Visual Studio 2022 not installed**
-   - Download Visual Studio 2022 Community
-   - Install C++ development tools
-   - Restart UE and project
+1. Close Unreal Editor before rebuilding plugin code.
+2. Confirm the project is opened with Unreal Engine 5.7.
+3. Regenerate project files if the IDE project is stale.
+4. Build the editor target before packaging.
+5. Read the first compiler error, not only `Unknown Error` at the end.
 
-2. **Missing .NET Framework**
-   - Install .NET Framework 4.7.2 or higher
-   - Restart Windows
-   - Retry opening project
+### Blueprint widgets report missing bindings
 
-3. **Corrupted intermediate files**
-   - Delete `Intermediate/` and `Binaries/` folders
-   - Delete `Saved/` folder (optional; saves player data)
-   - Reopen project
-   - Recompile C++ modules
+Several C++ widgets find optional controls by configured widget name. Confirm that the Designer names match the names set in Class Defaults.
 
-4. **Wrong Unreal Engine version**
-   - Verify project uses UE 5.7
-   - Upgrade UE if using older version
-   - Regenerate Visual Studio project files
+Examples include profile region/location controls, settings controls, mission result buttons, and killer-card text widgets.
 
-### Compilation Errors
+When a widget cannot use the preferred name because a Blueprint variable already owns it, use a unique Designer name and update the matching configurable name in Class Defaults.
 
-**Symptom:** Project fails to compile with C++ errors
+### Packaged build opens a blank or white screen
 
-**Solutions:**
+Check:
 
-1. **Clean rebuild**
-   ```
-   Delete: Intermediate/, Binaries/, Saved/
-   Reopen project in UE
-   ```
+- The target map is included in packaging/cooking.
+- The configured travel map name is valid.
+- The selected pawn class and spawn point are valid.
+- The loading widget is not left above the viewport after travel.
+- The log contains successful `OpenLevel`/travel and GameMode initialization.
 
-2. **Update Visual Studio**
-   - Install latest Visual Studio 2022 updates
-   - Install latest C++ tools
-   - Restart UE
+Test offline, private, and public travel separately. A failure in every non-mission mode usually indicates a shared travel/loading path rather than EOS itself.
 
-3. **Verify plugin dependencies**
-   - Edit → Plugins
-   - Search "Aerial" or "Jet"
-   - Both plugins should be enabled
-   - Restart editor if disabled any
+## EOS and Sessions
 
-4. **Check compile errors in Output Log**
-   - Window → Output Log
-   - Search for `error` (not warning)
-   - Fix reported issues
-   - Recompile
+### Public multiplayer is disabled
 
-### Game Crashes on Launch
+This is expected in the Fab-ready project until EOS is configured.
 
-**Symptom:** Game starts then immediately crashes
+Verify:
 
-**Solutions:**
+- Online Subsystem EOS is enabled.
+- Socket Subsystem EOS is enabled.
+- EOS artifact values are populated.
+- `DefaultArtifactName` exactly matches `ArtifactName`.
+- `[OnlineSubsystemEOS] bEnabled=True`.
+- `[OnlineSubsystem] DefaultPlatformService=EOS`.
+- The editor was restarted.
 
-1. **Delete Saved data**
-   ```
-   Navigate to Project/Saved/
-   Delete entire Saved/ folder
-   Restart project
-   ```
+See [EOS Setup](EOS_SETUP.md).
 
-2. **Verify map loads**
-   - Content Browser → Show Plugin Content
-   - AT_GM Content → Maps → MainMenu
-   - Double-click MainMenu to load
-   - If it loads, map is OK
+### UI stays on Connecting to EOS
 
-3. **Check system requirements**
-   - Windows 10 or 11 (64-bit)
-   - 16 GB RAM minimum
-   - GPU with 6 GB VRAM
-   - DirectX 12 compatible
+- Finish the Account Portal login window.
+- Check `LogEOS`, `LogEOSSDK`, and identity messages.
+- Verify the selected sandbox and deployment.
+- Do not enable public actions until the local identity reports logged in.
 
-4. **Review crash logs**
-   - Logs stored in `Project/Saved/Logs/`
-   - Most recent .log file
-   - Search for "fatal error"
-   - Note the error and research
+### Public login fails
 
----
+- Recheck client credentials and artifact values.
+- Confirm the two test accounts are different.
+- Confirm the account is permitted in the selected EOS environment.
+- Restart after changing EOS configuration.
 
-## Flight & Control Issues
+### No public sessions are found
 
-### Controls Don't Respond
+- Confirm host and client use the same product, sandbox, deployment, and artifact.
+- Confirm the host created a public EOS session.
+- Wait for the asynchronous search to complete.
+- Check that both players are logged in.
 
-**Symptom:** Keyboard/mouse input not controlling aircraft
+### Private sessions are not found
 
-**Solutions:**
+- Confirm both clients are using the private/NULL workflow.
+- Host before pressing Find on the second client.
+- Verify the chosen map is available in both builds.
+- Test two packaged clients on the same machine before testing separate machines.
 
-1. **Ensure game window has focus**
-   - Click in game window
-   - Verify window is active (title bar not greyed out)
+## Multiplayer Movement and Weapons
 
-2. **Check pause state**
-   - Press Escape or P
-   - Verify "PAUSED" message appears/disappears
-   - Resume game if paused
+### Remote jet shakes or jitters
 
-3. **Verify input bindings**
-   - Settings → Controls
-   - Check default keys are mapped
-   - Test a key (e.g., press W)
-   - Should see aircraft pitch up in-game
+Small shake can still appear during close slow passes on real internet connections.
 
-4. **Try gamepad if keyboard fails**
-   - Connect gamepad
-   - Restart game
-   - Test controller input
+Check:
 
-5. **Restart input system**
-   - Alt-Tab away from game
-   - Alt-Tab back to game
-   - Try controls again
+- Both clients maintain a stable frame rate.
+- The host connection has stable upload and latency.
+- The test uses the same build on both machines.
+- Network emulation is disabled unless intentionally testing it.
+- The issue is observed in both host directions.
 
-### Aircraft Spins Out of Control
+Do not judge remote smoothing from only one role. Swap who hosts.
 
-**Symptom:** Aircraft rotates wildly and crashes
+### Joined player feels a small control delay
 
-**Causes & Solutions:**
+The server is authoritative, so a poor or unstable path to the host can affect joined-player presentation. Compare against a local two-client packaged test and a second cross-network run.
 
-1. **Over-input on controls** — Reduce sensitivity
-   - Settings → Controls → Mouse Sensitivity
-   - Decrease from 1.0 to 0.7
-   - Try again with gentler inputs
+### Projectile or effect appears behind a fast jet
 
-2. **Stall condition** (Advanced mode)
-   - Lower nose (press S)
-   - Increase throttle (press Shift)
-   - Wait for speed to recover
-   - Gradually level wings
+The project includes weapon-spawn corrections, but severe latency can still make rockets, missiles, or flares appear briefly behind a high-speed aircraft.
 
-3. **Inverted controls**
-   - Settings → Controls → Invert Pitch
-   - Toggle off (should be Off by default)
-   - Retry
+Confirm:
 
-4. **Wrong flight mode**
-   - Settings → Gameplay → Flight Mode
-   - Select Arcade mode if in Advanced
-   - Arcade is more forgiving
+- Bullet spawn remains correct at high speed.
+- The issue affects only remote presentation.
+- Both players use matching builds.
+- Logs show no rejected fire requests or invalid spawn transforms.
 
-### Can't Take Off
+### Exhaust works before crash but not after respawn
 
-**Symptom:** Aircraft won't lift off the ground despite nose-up
+- Confirm the exhaust mode is not `None`.
+- Verify exhaust components rebuild during runtime refresh.
+- Verify the respawned pawn uses the expected mesh and exhaust sockets.
+- Test idle, full throttle, and afterburner after every respawn.
 
-**Solutions:**
+## Radar and Targeting
 
-1. **Insufficient runway**
-   - Need at least 3,000 feet of clear runway
-   - Try open area instead
-   - Free Flight mode if testing
+### AI appears friendly on radar
 
-2. **Throttle not at full**
-   - Hold Shift to increase throttle
-   - Verify throttle gauge reaches ~80-90%
-   - Gradually increase; don't jerk it
+Confirm the AI radar signature/team classification is configured as hostile. Player jets use replicated team data; GroundTGT, AirTGT, and AI use their supported target/signature classification.
 
-3. **Incorrect pitch angle**
-   - In Arcade mode: Pitch up when ~80 knots
-   - In Advanced mode: Rotate at ~80 knots; liftoff at ~100 knots
-   - Don't pitch too aggressively
+### Ground or air targets have different colors for host and client
 
-4. **Weight/fuel too high**
-   - Try with reduced loadout (fewer weapons)
-   - Land and refuel to see if fuel affects takeoff
-   - Default loadout should work
+Check that both sides resolve the same target relationship and that target actors replicate their classification. Do not derive a global target color from local authority alone.
 
-### Landing Too Hard / Crashes
+### Auto-lock audio continues in manual mode
 
-**Symptom:** Aircraft crashes on landing or takes excessive damage
+Manual targeting must suppress the auto-target widget and its lock audio. Confirm the targeting mode switch disables both presentation paths, not only the widget visibility.
 
-**Solutions:**
+## Audio
 
-1. **Too steep descent**
-   - Aim for 5-10 degree descent angle
-   - Use air brake (Space) to shallow descent
-   - Approach should feel shallow
+### AI flares or gun are audible from too far away
 
-2. **Too fast on approach**
-   - Reduce speed earlier
-   - Use air brake in descent
-   - Approach speed should be 120-140 knots
+- Assign the AI action attenuation asset.
+- Confirm the sound is spawned as a spatial sound at the AI location.
+- Check the Blueprint's remote audible-distance limit.
+- Confirm the cue does not contain an unattenuated 2D playback path.
 
-3. **Not deploying landing gear**
-   - Press G before landing
-   - Verify landing gear indicator shows down
-   - Smooth landing with gear down
+### Thunder plays twice
 
-4. **Landing on wrong surface**
-   - Try landing on runways only
-   - Grass/water/mountains = crash
-   - Use autopilot for smooth descent if available
+Confirm only one thunder FX actor is active and that concurrency/cooldown prevents overlapping triggers. The thunder actor should not be duplicated per player.
 
-5. **Practice landing**
-   - Free Flight mode
-   - Pick flat area
-   - Practice approach and flare
-   - Build landing skills gradually
+### Warning phrases repeat rapidly
 
-### Stalling Repeatedly (Advanced Mode)
+Review warning cooldowns and state transitions. A warning should start when its condition becomes active, remain controlled while active, and stop cleanly when the condition clears.
 
-**Symptom:** Aircraft keeps stalling and falling from sky
+## Missions
 
-**Solutions:**
+### Mission starts but no radio plays
 
-1. **Monitor airspeed constantly**
-   - Watch right side of HUD (airspeed tape)
-   - Red region = stall zone
-   - Keep speed above stall speed line
+- Enable automatic playback for the configured mission audio sequence.
+- Assign each beat a sound.
+- Check delay-before and delay-after values.
+- Confirm the MissionDirector is allowed to run for the current mission travel.
 
-2. **Reduce pitch aggressively**
-   - Don't pitch up more than 45 degrees
-   - Reduce pitch when airspeed bleeds
-   - Pitch to climb, not roll to climb
+### Waypoint immediately completes the mission
 
-3. **Climb gradually**
-   - Don't climb at more than 20 degree angle
-   - Trade airspeed for altitude slowly
-   - Maintain minimum safe airspeed
+Disable **Complete Mission when Final Waypoint Passed** when the mission also requires targets. Mission 03 uses the waypoint to begin combat, while configured required targets determine completion.
 
-4. **Use auto-level frequently**
-   - Press H to engage auto-level
-   - Helps recover from excessive pitch
-   - Reduces stall risk significantly
+### Waypoint remains visible after passing
 
-5. **Switch to Arcade mode**
-   - Advanced stalls are punishing
-   - Learn in Arcade first
-   - Graduate to Advanced when comfortable
+Enable the waypoint's passed visual state or hide/destroy behavior used by the MissionDirector event configuration.
 
-### Camera Feels Jerky / Shaky
+### Targets are visible before the waypoint
 
-**Symptom:** Camera movement is stuttering or not smooth
+Configure the targets as mission-activated actors and let the MissionDirector apply their initial hidden/disabled state. Avoid adding separate Event Graph wiring that fights the director.
 
-**Solutions:**
+### Action music does not start
 
-1. **Reduce mouse sensitivity**
-   - Settings → Controls → Mouse Sensitivity
-   - Lower to 0.7-0.8
-   - Slower movement = smoother feel
+- Assign Mission Action Music.
+- Configure the waypoint event to start it.
+- Verify its volume and fade-in time.
+- Confirm no completion/failure/pause path immediately fades it out.
 
-2. **Check frame rate**
-   - Should be 60 FPS minimum; 90+ better
-   - Monitor in top-left corner (if FPS display enabled)
-   - If low FPS, lower graphics settings
+### No Level Sequence warning appears
 
-3. **Try different camera mode**
-   - Press V to cycle cameras
-   - Chase camera (far back) usually smoothest
-   - Cockpit camera most jarring due to limited view
+Mission 03 intentionally supports a no-sequence intro and fade-in flow. Use the no-sequence fallback without enabling debug warnings for a deliberately empty sequence.
 
-4. **Disable motion blur**
-   - Settings → Graphics → Motion Blur
-   - Set to 0
-   - Can cause perceived shakiness
+## AI
 
-5. **Restart game**
-   - Close and reopen application
-   - Often fixes temporary jitter
+### AI does not attack
 
----
+- Confirm Auto Activate or mission activation occurs.
+- Confirm a valid hostile target exists.
+- Check gun/missile enable flags and ranges.
+- Check line-of-sight and aim-cone requirements.
+- Confirm the selected difficulty preset is applied.
 
-## Weapons & Combat Issues
+### AI becomes too easy or dies from one hit
 
-### Gun Seems Inaccurate
+Review the AI health component and the selected difficulty damage values. Weapon damage dealt by the AI and damage received by the AI are separate concerns.
 
-**Symptom:** Gun rounds miss distant targets consistently
+### AI crashes in terrain
 
-**Solutions:**
+Increase avoidance look-ahead and clearance cautiously, then test high-speed pursuit through the actual terrain. The project includes avoidance sensors and escape behavior, but extreme terrain traps can still defeat AI pathing.
 
-1. **You're too far away**
-   - Get closer (within 1 km)
-   - Gun is short-range weapon
-   - Move closer for reliable hits
+## UI and Profile
 
-2. **You're not leading target**
-   - In Advanced mode, lead target motion
-   - Aim ahead of where target is
-   - Requires practice and timing
+### Name or server field accepts too much text
 
-3. **Too much speed**
-   - Slow down to improve accuracy
-   - Fast passes overshoot
-   - Match target speed for accuracy
+Confirm the editable text control is bound to the supplied length guard. Player names use a 16-character maximum.
 
-4. **Aim assist disabled**
-   - Settings → Gameplay → Aim Assist
-   - Turn On (if it's Off)
-   - Helps with lead calculation
+### Location is Unknown on the killer card
 
-5. **Practice aiming**
-   - Use training mission
-   - Practice against stationary targets
-   - Build muscle memory for leading
+Confirm region/location were saved in the root profile and replicated into PlayerState before combat. AI location remains `Unknown` unless a project-specific AI location is supplied.
 
-### Missiles Won't Lock
+## When Reporting an Issue
 
-**Symptom:** Can't get lock-on despite trying
+Provide:
 
-**Solutions:**
+1. Reproduction steps.
+2. Expected and actual behavior.
+3. Editor or packaged build.
+4. Single-player, private, or public EOS mode.
+5. Host/client role.
+6. Matching logs.
+7. A short video or screenshot when the issue is visual.
 
-1. **Target out of range**
-   - Missile range is ~20 km
-   - Get closer to target
-   - HUD shows range to target
+## Related Documentation
 
-2. **No line of sight**
-   - Terrain blocking radar
-   - Climb to higher altitude
-   - Maneuver to get LOS
-
-3. **Wrong radar mode**
-   - Settings → Gameplay → Radar Mode
-   - Try different mode (Pulse/Doppler/TWS)
-   - Some modes better for locking
-
-4. **Target too slow**
-   - Stationary targets need Pulse mode
-   - Doppler mode filters stationary targets
-   - Switch modes if having trouble
-
-5. **Radar interference**
-   - Terrain can block radar
-   - Maneuver behind target
-   - Get closer for more certain lock
-
-### Flares Don't Stop Missiles
-
-**Symptom:** Deploy flares but missile still hits
-
-**Solutions:**
-
-1. **Deploy too late**
-   - Deploy as soon as missile warning sounds
-   - Don't wait for missile to get close
-   - Early deployment better than late
-
-2. **Not maneuvering**
-   - Deploy flares AND maneuver hard
-   - Hard turn while deploying
-   - Combination stops missile
-
-3. **Multiple missiles**
-   - Single salvo may not stop multiple missiles
-   - Deploy multiple flare patterns
-   - Maneuver aggressively between deployments
-
-4. **Out of flares**
-   - Check flare count on HUD
-   - If at 0, no flares available
-   - Refuel/rearm at base
-
-5. **Wrong difficulty**
-   - Advanced/Ace AI fires guided missiles
-   - Harder to evade than Normal AI
-   - Practice against Normal first
-
----
-
-## Multiplayer Issues
-
-### Can't Connect to Server
-
-**Symptom:** "Connection failed" when trying to join server
-
-**Solutions:**
-
-1. **Wrong IP address**
-   - Verify server IP is correct
-   - Ask host for correct IP
-   - Format: 192.168.X.X:7777
-
-2. **Server not running**
-   - Verify host has started server
-   - Server should show in LAN browser
-   - Ask host to restart server
-
-3. **Firewall blocking connection**
-   - Windows Firewall may block game
-   - Go to Windows Firewall settings
-   - Allow Aerial Thunder through firewall
-   - Restart game
-
-4. **Incorrect port**
-   - Default port is 7777
-   - If custom port, verify it matches
-   - Ask host for correct port
-
-5. **Network timeout**
-   - Try again (may be temporary)
-   - Check internet connection
-   - Try different server if available
-
-### Lag / High Latency
-
-**Symptom:** Other players teleporting; gameplay feels delayed
-
-**Solutions:**
-
-1. **Check internet speed**
-   - Minimum: 5 Mbps download / 2 Mbps upload
-   - Test at speedtest.net
-   - Upgrade ISP if too slow
-
-2. **Close other applications**
-   - Video streaming uses bandwidth
-   - Large downloads interfere
-   - Close unnecessary apps
-
-3. **Move closer to router**
-   - WiFi connection weaker at distance
-   - Move device closer to router
-   - Wired connection better than WiFi
-
-4. **Change servers**
-   - Try different server
-   - Some servers farther than others
-   - Regional servers usually better
-
-5. **Check ping**
-   - Settings → Multiplayer → Show Ping
-   - Display ping on HUD
-   - Below 100 ms ideal; 200+ problematic
-
-### Disconnected from Game
-
-**Symptom:** Kicked out of multiplayer match unexpectedly
-
-**Solutions:**
-
-1. **Network interruption**
-   - Check internet connection
-   - Restart router if needed
-   - Rejoin game if still active
-
-2. **AFK (Away from Keyboard) timeout**
-   - Idle too long without input
-   - Game kicks inactive players
-   - Stay active to remain connected
-
-3. **Kicked for poor connection**
-   - Ping too high
-   - Packet loss too high
-   - Connect from better network
-
-4. **Server crashed**
-   - Host may have shut down server
-   - Ask host to restart
-   - Try different server
-
-5. **EOS authentication failed**
-   - EOS session expired
-   - Log out and back in
-   - Restart application
-
----
-
-## Graphics & Performance Issues
-
-### Game Running Slowly (Low FPS)
-
-**Symptom:** Game feels choppy; frame rate below 60 FPS
-
-**Solutions:**
-
-1. **Lower graphics settings**
-   - Settings → Graphics → Quality
-   - Select "Low" preset
-   - Can increase if performance improves
-
-2. **Lower resolution**
-   - Settings → Graphics → Resolution
-   - Try 1920×1080 instead of higher
-   - Major FPS improvement
-
-3. **Disable expensive features**
-   - Motion Blur → 0
-   - Ray Tracing → Off
-   - Reflections → Off
-   - Bloom → Off
-
-4. **Close background applications**
-   - Task Manager → See CPU/GPU usage
-   - Close Chrome, Discord, etc.
-   - Free up system resources
-
-5. **Update graphics drivers**
-   - NVIDIA/AMD driver update
-   - Often includes performance improvements
-   - Restart after update
-
-### Graphical Artifacts / Visual Glitches
-
-**Symptom:** Flickering, visual glitches, or rendering errors
-
-**Solutions:**
-
-1. **Update graphics drivers**
-   - Outdated drivers cause glitches
-   - Visit NVIDIA/AMD website
-   - Download latest driver
-   - Restart after install
-
-2. **Disable DLSS (if enabled)**
-   - Can cause visual artifacts
-   - Settings → Graphics → DLSS
-   - Disable or set to off
-
-3. **Verify graphics hardware**
-   - GPU may be overheating
-   - Check GPU temperature
-   - May need to replace thermal paste
-
-4. **Reinstall graphics drivers**
-   - Complete uninstall (not just update)
-   - Restart
-   - Reinstall latest version
-
-5. **Lower graphics quality**
-   - Graphics settings → Low
-   - Some GPUs have compatibility issues
-   - Try lower quality presets
-
----
-
-## Audio Issues
-
-### No Sound
-
-**Symptom:** Game produces no audio output
-
-**Solutions:**
-
-1. **Check master volume**
-   - Settings → Audio → Master Volume
-   - Should be > 0%
-   - Increase if too low
-
-2. **Check OS audio settings**
-   - Windows Sound settings
-   - Verify output device not muted
-   - Check volume level
-
-3. **Verify audio device connected**
-   - Speakers/headphones plugged in
-   - Device shows in Windows audio settings
-   - Try different audio device
-
-4. **Restart audio engine**
-   - Alt-Tab away from game
-   - Alt-Tab back
-   - Audio should work
-
-### Audio Cutting Out / Crackling
-
-**Symptom:** Audio drops, crackling, or distortion
-
-**Solutions:**
-
-1. **Reduce audio quality**
-   - Settings → Audio → Audio Quality
-   - Lower setting reduces CPU load
-   - May improve crackling
-
-2. **Update audio drivers**
-   - Device Manager → Sound devices
-   - Right-click → Update driver
-   - Restart after update
-
-3. **Disable audio enhancements**
-   - Windows audio settings
-   - Disable enhancements for device
-   - Can cause crackling
-
-4. **Close audio-heavy applications**
-   - Discord, Spotify
-   - Voice chat uses audio resources
-   - Close to improve game audio
-
----
-
-## Save/Progression Issues
-
-### Progress Not Saving
-
-**Symptom:** Mission completion not saved; progression lost
-
-**Solutions:**
-
-1. **Check autosave**
-   - Autosave happens between levels
-   - Verify you completed mission fully
-   - Check results screen
-
-2. **Cloud save conflict**
-   - May not have synced yet
-   - Wait 30 seconds after mission complete
-   - Restart game to verify save
-
-3. **Disk space issue**
-   - Check free disk space
-   - Need at least 10 GB free
-   - Delete old files if needed
-
-4. **Permissions issue**
-   - Check folder permissions
-   - Saved/ folder may be read-only
-   - Change permissions in properties
-
-### Can't Load Save File
-
-**Symptom:** "Load failed" when trying to load mission save
-
-**Solutions:**
-
-1. **Save file corrupted**
-   - Delete save file: Saved/SaveGames/
-   - Start mission fresh
-   - Re-complete mission
-
-2. **Incompatible version**
-   - If game updated, old saves may break
-   - This is rare but possible
-   - Start fresh or downgrade
-
-3. **File permissions**
-   - Saved/ folder is read-only
-   - Right-click → Properties → Uncheck "Read-only"
-   - Retry loading
-
----
-
-## EOS / Online Issues
-
-### EOS Login Fails
-
-**Symptom:** "Authentication failed" when logging in
-
-**Solutions:**
-
-1. **Wrong credentials**
-   - Verify Epic Games username/password
-   - Account at epicgames.com
-   - Try reset password if unsure
-
-2. **Network connectivity**
-   - Verify internet connection
-   - Ping google.com in command prompt
-   - Check firewall not blocking connection
-
-3. **EOS misconfiguration**
-   - See [EOS Setup](EOS_SETUP.md)
-   - Verify credentials in project settings
-   - May need to reconfigure
-
-4. **EOS server down**
-   - Epic Games servers may be offline
-   - Check Epic Games status page
-   - Try again later
-
-### Progress Not Syncing
-
-**Symptom:** Cloud progression not saving/loading
-
-**Solutions:**
-
-1. **Cloud save disabled**
-   - Settings → Multiplayer → Cloud Sync
-   - Ensure enabled
-   - Restart game
-
-2. **EOS disconnected**
-   - Log out → Log back in
-   - Restart application
-   - Verify internet connection
-
-3. **Storage quota exceeded**
-   - Cloud storage has limits
-   - Delete old saves
-   - Reduce save file size
-
----
-
-## Report a Bug
-
-### How to Report
-
-1. **Gather information**
-   - Reproduce the bug consistently
-   - Note exact steps to reproduce
-   - Screenshot or video if possible
-   - Check game version
-
-2. **Check existing reports**
-   - Search GitHub Issues
-   - Your bug may already be reported
-   - Add +1 to existing report
-
-3. **Create detailed report**
-   - Title: Clear description
-   - Steps to reproduce: Exact steps
-   - Expected result: What should happen
-   - Actual result: What actually happens
-   - System info: OS, GPU, CPU, RAM
-
-4. **Attach files**
-   - Screenshot of issue
-   - Video of bug (if helpful)
-   - Log file: Saved/Logs/
-
----
-
-## Performance Troubleshooting Flowchart
-
-```
-Game Running Slow?
-├─ Check FPS: Settings → Show FPS
-├─ If 20-40 FPS:
-│  └─ Lower graphics: Settings → Graphics → Low
-├─ If 40-60 FPS:
-│  └─ Close background apps
-├─ If still slow:
-│  └─ Update graphics drivers
-└─ If no improvement:
-   └─ Check system requirements (may be insufficient)
-```
-
----
-
-## Support Resources
-
-- **Documentation:** Full guides for all systems
-- **Quick Start:** [Quick Start Guide](QUICK_START.md)
-- **Settings:** [Settings Reference](SETTINGS_REFERENCE.md)
-- **EOS:** [EOS Setup](EOS_SETUP.md)
-- **GitHub Issues:** Report bugs on repository
-
----
-
-**Face the issue. Find the solution. Get back to flying.**
+- [Quick Start](QUICK_START.md)
+- [EOS Setup](EOS_SETUP.md)
+- [Multiplayer](MULTIPLAYER.md)
+- [Mission System](MISSION_SYSTEM.md)
+- [AI System](AI_SYSTEM.md)

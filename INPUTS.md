@@ -1,325 +1,162 @@
-# Input & Controls Guide
+# Input and Controls Guide
 
-## Default Keyboard & Mouse Controls
+## Overview
 
-Aerial Thunder includes complete default input mappings. These are example mappings—developers can call exposed C++ and Blueprint functions from Enhanced Input or any custom input system.
+Aerial Thunder ships with keyboard and mouse mappings in `Config/DefaultInput.ini`. The project currently uses named action and axis mappings through Unreal's input settings. The default player input and input component classes are Enhanced Input classes, but the supplied gameplay bindings are the named mappings listed below.
+
+You can change the keys in:
+
+```text
+Edit > Project Settings > Engine > Input
+```
 
 ---
 
 ## Flight Controls
 
-| Function | Default Input | Type |
-|----------|---------------|------|
-| **Throttle Up** | Left Shift | Axis |
-| **Throttle Down** | Left Ctrl | Axis |
-| **Pitch Up** | W | Axis |
-| **Pitch Down** | S | Axis |
-| **Roll Left** | A | Axis |
-| **Roll Right** | D | Axis |
-| **Yaw Left** | Q | Axis |
-| **Yaw Right** | E | Axis |
-| **Air Brake** | Space | Action (Toggle/Hold) |
-| **Ground Brake** | Space (on ground) | Action (Hold) |
-| **Auto Level** | H | Action (Press) |
-| **Start Engine** | Enter | Action (Press) |
-| **Toggle Landing Gear** | G | Action (Press) |
+| Function | Default Input | Mapping Name |
+|----------|---------------|--------------|
+| Throttle up | Left Shift | `Throttle` (+1) |
+| Throttle down | Left Ctrl | `Throttle` (-1) |
+| Pitch up | W | `Pitch` (+1) |
+| Pitch down | S | `Pitch` (-1) |
+| Roll left | A | `Roll` (-1) |
+| Roll right | D | `Roll` (+1) |
+| Yaw left | Q | `Yaw` (-1) |
+| Yaw right | E | `Yaw` (+1) |
+| Air brake | Space | `AirBrake` |
+| Ground brake | Space | `Brake` |
+| Auto level | H | `AutoLevel` |
+| Start engine | Enter | `StartEngine` |
+| Landing gear up/down | G | `JetGearUP` |
+| Dogfight assist | Z | `JetDogFight` |
+
+The shared Space key is intentional. Its effect depends on whether the jet is airborne, grounded, or playing a skippable mission intro.
 
 ---
 
 ## Camera Controls
 
-| Function | Default Input | Type |
-|----------|---------------|------|
-| **Change Camera** | V | Action (Press) |
-| **Camera Reset** | 5 or Middle Mouse | Action (Press) |
-| **Camera Zoom In** | Mouse Wheel Up | Axis |
-| **Camera Zoom Out** | Mouse Wheel Down | Axis |
-| **Look Left** | Mouse X (negative) | Axis |
-| **Look Right** | Mouse X (positive) | Axis |
-| **Look Up** | Mouse Y (negative) | Axis |
-| **Look Down** | Mouse Y (positive) | Axis |
+| Function | Default Input | Mapping Name |
+|----------|---------------|--------------|
+| Change camera | V | `ToggleView` |
+| Reset camera | 5 | `CameraReset` |
+| Look horizontally | Mouse X | `LookRight` / `Turn` |
+| Look vertically | Mouse Y | `LookUp` |
+| Zoom | Mouse wheel | `ZoomInOut` |
+
+The jet supports cockpit, shoulder, and chase camera views. Camera behavior also depends on the selected control and camera settings.
 
 ---
 
-## Weapon Controls
+## Weapons
 
-| Function | Default Input | Type |
-|----------|---------------|------|
-| **Fire Gun** | Left Mouse Button | Action (Hold/Repeat) |
-| **Fire Rockets** | Right Mouse Button | Action (Press) |
-| **Fire Missile** | Middle Mouse Button | Action (Press) |
-| **Deploy Flares** | X | Action (Hold/Repeat) |
+| Function | Default Input | Mapping Name |
+|----------|---------------|--------------|
+| Fire gun | Left Mouse Button | `FireGun` |
+| Fire rocket | Right Mouse Button | `FireRocket` |
+| Fire missile | Middle Mouse Button | `JetFireMissile` |
+| Deploy flares | X | `DeployFlares` |
 
----
-
-## Targeting Controls
-
-| Function | Default Input | Type |
-|----------|---------------|------|
-| **Auto Targeting** | T | Action (Toggle) |
-| **Next Target** | 1 | Action (Press) |
-| **Previous Target** | 2 | Action (Press) |
-| **Manual Targeting** | 3 | Action (Press) |
-| **Manual Target Lock** | 4 | Action (Press) |
+Weapon availability depends on the selected loadout and remaining ammunition. Pylon visuals update with the current missile and rocket ammunition state.
 
 ---
 
-## Warning & System Controls
+## Targeting
 
-| Function | Default Input | Type |
-|----------|---------------|------|
-| **Warning System** | K | Action (Toggle) |
-| **Pause Game** | Escape or P | Action (Press) |
-| **Scoreboard** | Tab | Action (Press/Hold) |
-| **Multiplayer Dashboard** | U | Action (Press) |
-| **Skip Mission Intro** | Space | Action (Press) |
+| Function | Default Input | Mapping Name |
+|----------|---------------|--------------|
+| Toggle auto targeting | T | `Targeting` |
+| Next target | 1 | `CycleTargetNext` |
+| Previous target | 2 | `CycleTargetPrevious` |
+| Enter manual targeting | 3 | `ManualTargeting` |
+| Toggle manual lock | 4 | `ManualTargetToggle` |
 
----
+Auto and manual targeting are separate modes:
 
-## Input System Architecture
-
-### Default Input System (Legacy)
-Aerial Thunder ships with **Default Input System** bindings. These are configured in:
-```
-Project Settings → Engine → Input
-```
-
-**Axis Mappings** (continuous values):
-- `MoveForward` — W (+1) / S (-1)
-- `MoveRight` — A (-1) / D (+1) *Note: In aviation, this controls roll, not strafe*
-- `LookUp` — Mouse Y
-- `LookRight` — Mouse X
-- `Throttle` — Left Shift (+1) / Left Ctrl (-1)
-- `Yaw` — Q (-1) / E (+1)
-- `CameraZoom` — Mouse Wheel
-
-**Action Mappings** (discrete events):
-- `Brake`
-- `StartEngine`
-- `LandingGear`
-- `AutoLevel`
-- `ChangeCamera`
-- `CameraReset`
-- `FireGun`
-- `FireRockets`
-- `FireMissile`
-- `DeployFlares`
-- `AutoTargeting`
-- `NextTarget`
-- `PreviousTarget`
-- `ManualTargeting`
-- `ManualTargetLock`
-- `WarningSystem`
-- `Pause`
-- `Scoreboard`
-- `MultiplayerDashboard`
-- `SkipMissionIntro`
+- **Auto targeting** uses the forward targeting workflow, lock widget, and lock audio.
+- **Manual targeting** uses the cockpit capture/TAD workflow and suppresses the automatic lock widget and audio.
 
 ---
 
-## Using Enhanced Input System
+## Game and Multiplayer Controls
 
-If you prefer the **Enhanced Input System** (recommended for new projects):
+| Function | Default Input | Mapping Name |
+|----------|---------------|--------------|
+| Warning system | K | `JetWarningSystem` |
+| Pause menu | Escape or P | `PauseMenu` |
+| Team Death Match scoreboard | Tab | `TDMScoreboard` |
+| Multiplayer dashboard toggle | U | `TDMScoreboardToggle` |
+| Skip mission intro | Space | `SkipMissionIntro` |
+| Show/hide controls guide | 8 | `Guide` |
 
-### Setup
-1. **Enable Enhanced Input Plugin**
-   - Edit → Plugins → Search "Enhanced Input" → Enable
-   - Restart the editor
-
-2. **Create Input Map Context** (IA) and **Input Actions** (IA)
-   - Content Browser → Content / Input /
-   - Right-click → Miscellaneous → Input Mapping Context
-   - Create one per gameplay state (Flight, Menu, etc.)
-
-3. **Map Player Controller to Enhanced Input**
-   - In your player controller Blueprint:
-     - Set `Enhanced Input System Component`
-     - Load your Input Mapping Context on Possess
-
-### Example Setup (TODO: Verify actual paths and naming in project)
-
-#### Input Action: IA_Pitch
-```
-Value Type: Axis1D (Float)
-Bindings:
-  - W Key → Value +1.0
-  - S Key → Value -1.0
-```
-
-#### Input Action: IA_FireGun
-```
-Value Type: Digital (Boolean)
-Bindings:
-  - Left Mouse Button
-```
-
-#### Input Mapping Context: IMC_Flight
-```
-Mappings:
-  IA_MoveForward → IA_Pitch
-  IA_MoveRight → IA_Roll
-  IA_LookUp → Mouse Y-Axis
-  IA_LookRight → Mouse X-Axis
-  IA_Throttle → Shift/Ctrl
-  IA_FireGun → Left Mouse
-  ... (etc for all actions)
-```
-
-#### In Your Aircraft Blueprint
-```
-Event: Setup Input Component
-  └─ Bind Input Action IA_Pitch
-      └─ Call MoveForward(Value)
-  └─ Bind Input Action IA_FireGun
-      └─ Call FireGun()
-```
+Mission intro skipping only works when the active mission intro director allows skipping and a playable intro is running.
 
 ---
 
-## Custom Input Implementation
+## Input Configuration
 
-You can also implement your own input system by calling the exposed Aircraft functions directly:
+The exact shipped mapping names matter because the C++ and Blueprint gameplay classes listen for them. If you rename a mapping, update every listener that uses that name.
 
-### Core Aircraft Functions
+Recommended workflow:
 
-#### Flight Control
-```cpp
-// Called from any input system
-void MoveForward(float AxisValue);     // Pitch control: -1.0 to +1.0
-void MoveRight(float AxisValue);       // Roll control: -1.0 to +1.0
-void LookYaw(float AxisValue);         // Yaw control: -1.0 to +1.0
-void SetThrottle(float Value);         // Throttle: 0.0 to 1.0
-void SetBrake(bool bActive);
-void ToggleLandingGear();
-void AutoLevel();
-void StartEngine();
-```
+1. Duplicate the project before changing the default control scheme.
+2. Open **Project Settings > Input**.
+3. Change keys while keeping the existing mapping names.
+4. Test airborne start, grounded start, every camera, targeting modes, and pause/menu input.
+5. Test both a standalone session and a two-player listen-server session.
 
-#### Camera Control
-```cpp
-void ChangeCamera();                   // Cycle through cameras
-void CameraReset();                    // Reset to default zoom/angle
-void CameraZoom(float AxisValue);      // Zoom: -1.0 to +1.0
-void CameraLook(FVector2D LookInput);  // Look direction
-```
+### Mouse Sensitivity
 
-#### Weapons
-```cpp
-void FireGun(bool bPressed);           // Gun fire: hold or repeat
-void FireRockets();                    // One rocket per call
-void FireMissile();                    // One missile per call
-void DeployFlares(bool bActive);       // Flare deployment: hold or repeat
-```
+The supplied input configuration uses a sensitivity of `0.07` for Mouse X, Mouse Y, and Mouse 2D. Player-facing control settings can further affect the feel of camera and flight input.
 
-#### Targeting
-```cpp
-void AutoTargeting();                  // Toggle automatic lock
-void NextTarget();                     // Cycle to next target
-void PreviousTarget();                 // Cycle to previous target
-void ManualTargeting();                // Enter manual targeting mode
-void ManualTargetLock();               // Lock onto manual target
-```
+### Gamepad and Custom Controllers
+
+The supplied documentation does not claim a complete default gamepad layout. Unreal exposes gamepad axis configuration, but developers should add and test their own action and axis mappings for the target controller.
+
+When adding a controller:
+
+1. Reuse the existing mapping names where possible.
+2. Add dead zones appropriate to the device.
+3. Test pitch, roll, yaw, throttle, camera, weapons, and menu focus separately.
+4. Verify behavior in multiplayer as both host and joined client.
+
+### Migrating to Input Actions and Mapping Contexts
+
+Developers may replace the named mappings with a full Enhanced Input action/context setup. This is an integration task, not a prebuilt asset set included with the template. Preserve the same gameplay intent and call the existing jet/controller interfaces from the new input events.
 
 ---
 
-## Input Timing & Feedback
+## Troubleshooting
 
-### Responsiveness
-- **Flight Input:** Immediately reflected in aircraft rotation (client-side prediction)
-- **Weapon Fire:** Registered on client, confirmed on server (latency ≈ network ping)
-- **Targeting:** Auto-lock calculations updated at 10 Hz (configurable)
-- **Camera:** Immediate client-side response
+### No Flight Input
 
-### Anti-Cheat Considerations
-- All damage and elimination decisions are **server-authoritative**
-- Client input is used for movement, server validates physics
-- Weapon fire is replicated with server confirmation
-- Impossible moves (out-of-bounds input) are rejected by server
+1. Click the game viewport so it has focus.
+2. Confirm the game is not paused or displaying a modal menu.
+3. Confirm the player controller possesses the expected jet pawn.
+4. Check that the mapping names still match `DefaultInput.ini`.
+5. For mission intros, wait for possession or use the configured skip workflow.
 
----
+### Wrong Key Behavior
 
-## Gamepad Support
+Some keys intentionally serve more than one context. Space can brake, air-brake, or skip an intro. Verify the current grounded/airborne and mission state before changing the mapping.
 
-Gamepad input is supported via the Default Input System:
+### Camera Does Not Move
 
-### Recommended Gamepad Mapping
+1. Confirm the active camera view permits free look.
+2. Check `LookRight`, `LookUp`, and `ZoomInOut` mappings.
+3. Reset the camera with 5.
+4. Check the selected camera and control settings in the root menu.
 
-| Function | Gamepad Input |
-|----------|---------------|
-| **Pitch** | Right Thumbstick Y |
-| **Roll** | Right Thumbstick X |
-| **Yaw** | Left Trigger + Right Trigger (shoulder) |
-| **Throttle** | Left Thumbstick Y (forward/back) |
-| **Fire Gun** | Right Trigger (RT) |
-| **Fire Rockets** | Left Shoulder (LB) |
-| **Fire Missile** | Right Shoulder (RB) |
-| **Deploy Flares** | A Button |
-| **Change Camera** | Y Button |
-| **Pause** | Start Button |
+### Input Feels Delayed Online
 
-**Note:** TODO: Verify gamepad binding configuration in project.
+Compare the same action in standalone, local listen-server, and public EOS sessions. Joined-client responsiveness can be affected by network latency and packet timing; do not tune offline flight behavior from one poor internet test.
 
 ---
 
-## Mobile/Touch Input (if applicable)
+## Related Guides
 
-TODO: Verify if touch input is supported. If not, add note.
-
----
-
-## Input Validation & Limits
-
-### Input Ranges
-- **Axis Values:** -1.0 to +1.0 (normalized)
-- **Throttle:** 0.0 (off) to 1.0 (full power)
-- **Brakes:** Boolean (0 or 1)
-
-### Input Filtering
-- **Dead Zone:** Small inputs near zero are ignored (prevents drift)
-- **Scaling:** Inputs are scaled by sensitivity settings (see [Settings Reference](SETTINGS_REFERENCE.md))
-- **Rate Limiting:** Rapid repeated inputs are filtered to prevent exploits
-
----
-
-## Troubleshooting Input Issues
-
-### Controls Don't Respond
-1. **Ensure focus:** Click in the game window
-2. **Check pause state:** Press Escape to unpause
-3. **Verify input bindings:** Edit → Project Settings → Input
-4. **Check input component:** In Blueprint, verify "Setup Input Component" is called
-
-### Inputs Are Too Sensitive / Not Responsive Enough
-1. **Adjust sensitivity:** Main Menu → Settings → Controls
-2. **Check dead zone:** Project Settings → Input → Axis Properties
-3. **Verify scaling:** See [Settings Reference](SETTINGS_REFERENCE.md)
-
-### Gamepad Not Detected
-1. **Test in Windows:** Settings → Devices → Game controllers
-2. **Restart editor:** Plug in gamepad, restart editor
-3. **Check mapping:** Verify gamepad binding in Project Settings
-
-### Enhanced Input Not Working
-1. **Verify plugin enabled:** Edit → Plugins → "Enhanced Input"
-2. **Check setup:** Ensure Input Mapping Context is loaded in PlayerController
-3. **Verify bindings:** Check IA and IMC assets for correct mappings
-4. **Check focus:** Ensure PlayerController has Input Component enabled
-
----
-
-## Best Practices
-
-1. **Use Enhanced Input for new projects** — More flexible and better supported
-2. **Bind only when needed** — Unbind inputs when not in use (e.g., pause menu)
-3. **Test on target input device** — Keyboard + mouse, gamepad, or custom input
-4. **Use input sensitivity settings** — Allow players to customize responsiveness
-5. **Provide key rebinding UI** — Let players customize controls to their preference
-6. **Test latency** — Verify input responsiveness with network lag
-
----
-
-For more details, see:
-- [Flight & Cameras](FLIGHT_AND_CAMERAS.md) — Flight-specific input handling
-- [Weapons & Targeting](WEAPONS_AND_TARGETING.md) — Weapon input patterns
-- [Multiplayer](MULTIPLAYER.md) — Input replication and netcode
-- [Settings Reference](SETTINGS_REFERENCE.md) — Input sensitivity and configuration
+- [Flight and Cameras](FLIGHT_AND_CAMERAS.md)
+- [Weapons and Targeting](WEAPONS_AND_TARGETING.md)
+- [Multiplayer](MULTIPLAYER.md)
+- [Settings Reference](SETTINGS_REFERENCE.md)

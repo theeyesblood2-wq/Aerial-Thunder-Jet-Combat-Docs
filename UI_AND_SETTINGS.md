@@ -1,441 +1,203 @@
-# UI & Settings Guide
+# UI and Settings
 
-## User Interface Overview
+## Overview
 
-Aerial Thunder features a complete UI system with main menu, in-game HUD, settings, and post-game screens. All UI is built in Unreal Motion Graphics (UMG) for flexibility and customization.
-
----
-
-## Main Menu
-
-### Main Menu Structure
-
-```
-Aerial Thunder Main Menu
-├── Single Player
-│   ├── Campaign (Mission Select)
-│   ├── Free Flight
-│   └── Mission Replay
-├── Multiplayer
-│   ├── Join LAN Game
-│   ├── Host LAN Game
-│   └── EOS Public Match (if configured)
-├── Settings
-│   ├── Audio
-│   ├── Graphics
-│   ├── Gameplay
-│   ├── Controls
-│   └── Video
-├── Player Profile
-│   ├── Name & Account
-│   ├── Loadouts
-│   └── Statistics
-└── Exit
-```
-
-### Single Player
-
-#### Campaign
-- **Mission Select** — Choose which mission to play
-- **Difficulty** — Select Normal/Advanced/Ace
-- **Aircraft** — Pick aircraft (F-16, customized variants, etc.)
-- **Loadout** — Configure weapons and fuel
-- **Start** — Launch mission
-
-#### Free Flight
-- **Map Select** — Choose flying area
-- **Time of Day** — Dawn/Noon/Dusk/Night
-- **Weather** — Clear/Cloudy/Stormy
-- **Aircraft & Loadout** — Same as campaign
-- **Fly Free** — No objectives, just explore
-
-#### Mission Replay
-- **Completed Missions** — Choose any previously-completed mission
-- **Challenge Leaderboards** — Compete for high scores
-- **New Difficulty** — Replay at harder difficulty
-- **Target Score** — Attempt to beat personal best
+The project includes a complete UMG workflow for first launch, root navigation, offline setup, mission selection, multiplayer sessions, deployment, settings, pause/results, killed-in-action feedback, and loading screens. C++ base widgets use optional name bindings so designers can replace the presentation while keeping the workflow.
 
 ---
 
-## Multiplayer Menu
+## First Launch and Profile
 
-### Multiplayer Game Types
+The startup flow supports:
 
-#### Host LAN Game
-1. **Map Select** — Choose multiplayer map
-2. **Game Mode** — Deathmatch/Team DM/CTF/KotH
-3. **Player Limit** — Set max players (2-8)
-4. **Time Limit** — Game duration
-5. **Advanced Options** — Friendly fire, respawn timer, etc.
-6. **Start Server** — Create game server
+1. A one-time studio/logo screen.
+2. A profile screen for username, region, and location.
+3. Validation and local persistence.
+4. Direct root-menu entry on later launches when the profile is complete.
 
-#### Join LAN Game
-1. **Server List** — Browse available servers
-2. **Or Manual IP** — Enter IP and port manually
-3. **Join** — Connect to selected server
+Username rules are enforced at input and validation time. The supplied maximum is 16 characters. Server names use the same profanity/guard-word validation path and a configurable maximum length.
 
-#### EOS Public Match
-1. **Login** — EOS account login
-2. **Mode Select** — Choose ranked/casual
-3. **Game Mode** — Available modes for selection
-4. **Search** — Find match (queues player)
-5. **Load** — Spawn into match when ready
+Region and location are player-entered profile metadata. They are advertised in session rows and can be shown on killer information. The template does not automatically geolocate a player from an IP address.
 
 ---
 
-## Settings Menu
+## Root Menu
 
-### Audio Settings
+The root widget uses a screen switcher rather than opening a separate widget for every internal page. Included paths cover:
 
-| Setting | Range | Default | Effect |
-|---------|-------|---------|--------|
-| **Master Volume** | 0-100% | 80% | Overall game volume |
-| **Music Volume** | 0-100% | 60% | Background music level |
-| **Effects Volume** | 0-100% | 80% | Sound effects level |
-| **Voice Volume** | 0-100% | 70% | Radio/callouts volume |
-| **Warnings Volume** | 0-100% | 90% | Warning/alert tones |
-| **Reverb Enabled** | On/Off | On | Environmental audio |
-| **Surround Sound** | On/Off | On | 5.1/7.1 support |
+- Single player
+- Free flight
+- Mission selection
+- Multiplayer selection
+- Private multiplayer
+- Public multiplayer
+- Settings
+- Aircraft, map, loadout, AI, and control selections
 
-**Audio Presets:**
-- **Balanced** — Equal levels across all categories
-- **Immersive** — Enhanced surround; higher effects
-- **Communication** — Boost voice/warnings; reduce music
-- **Custom** — Adjust individually
+Screen transitions are designer-authored UMG animations assigned in Class Defaults. Internal switcher navigation can play the configured transition; flows that open a separate top-level widget can bypass it.
 
-### Graphics Settings
-
-#### Quality Presets
-
-| Preset | Resolution | Shadows | Effects | FPS Target |
-|--------|-----------|---------|---------|-----------|
-| **Low** | 1280×720 | Low | Medium | 60 FPS |
-| **Medium** | 1920×1080 | Medium | High | 60 FPS |
-| **High** | 2560×1440 | High | Ultra | 60 FPS |
-| **Ultra** | 3840×2160 | Ultra | Ultra | 30-60 FPS |
-| **Custom** | User-set | User-set | User-set | User-set |
-
-#### Advanced Graphics Options
-
-- **Resolution** — Screen resolution
-- **Refresh Rate** — Hz (60/120/144/240)
-- **V-Sync** — On/Off (reduces tearing)
-- **Motion Blur** — Amount (0-100%)
-- **Depth of Field** — Focus blur (0-100%)
-- **Bloom** — Light bloom effect (0-100%)
-- **Shadows** — Quality and distance
-- **Reflections** — Water/cockpit reflections
-- **Anti-Aliasing** — TAA/MSAA/FXAA
-- **Ray Tracing** — On/Off (if supported)
-
-### Gameplay Settings
-
-| Setting | Options | Default | Effect |
-|---------|---------|---------|--------|
-| **Flight Mode** | Arcade/Advanced | Arcade | Flight physics |
-| **Auto Level** | On/Off | On | Auto-level assist |
-| **Stall Recovery** | Assisted/Manual | Assisted | Stall behavior |
-| **HUD Scale** | 50-150% | 100% | HUD element size |
-| **HUD Opacity** | 0-100% | 100% | HUD transparency |
-| **Minimal HUD** | On/Off | Off | Immersion mode |
-| **Radar Mode** | Pulse/Doppler/TWS | Pulse | Default radar |
-| **Difficulty** | Normal/Advanced/Ace | Normal | AI difficulty |
-| **Aim Assist** | On/Off | On | Lock-on help |
-| **Friendly Fire** | On/Off | Off | Team damage |
-| **Crosshair** | Predator/Circle/Custom | Predator | Reticle style |
-| **Text Size** | 80-150% | 100% | UI text size |
-
-### Controls Settings
-
-#### Control Scheme
-
-- **Keyboard & Mouse** — Default
-- **Gamepad** — Xbox/PlayStation controller
-- **Custom** — User-defined bindings
-
-#### Sensitivity Settings
-
-- **Mouse Sensitivity** — 0.1-2.0 (default 1.0)
-- **Throttle Sensitivity** — 0.5-2.0 (default 1.0)
-- **Yaw Sensitivity** — 0.5-2.0 (default 1.0)
-- **Gamepad Stick Deadzone** — 0-30% (default 15%)
-
-#### Key Bindings
-
-All mappings customizable:
-- **Flight Controls** — Pitch/Roll/Yaw/Throttle
-- **Weapons** — Gun/Rockets/Missiles/Flares
-- **Targeting** — Lock/Cycle/Manual
-- **Camera** — Change/Reset/Zoom
-- **UI** — Pause/Menu/Scoreboard
-
-#### Inverted Controls
-
-- **Pitch Invert** — On/Off
-- **Yaw Invert** — On/Off
-- **Camera Invert** — On/Off
-
-### Video Settings
-
-#### Display Options
-
-- **Screen Mode** — Fullscreen/Windowed/Borderless
-- **Monitor** — Select if multiple displays
-- **Brightness** — 0-100%
-- **Contrast** — 0-100%
-- **Gamma** — Adjustment slider
-- **HDR Support** — On/Off
-
-#### Performance Options
-
-- **Frame Rate Cap** — 30-240 FPS or Unlimited
-- **Frame Rate Smoothing** — On/Off
-- **Adaptive Resolution** — On/Off (adjusts resolution to maintain FPS)
-- **VRR** — FreeSync/G-Sync support
+Mission entries are data-driven. Each entry defines its button name, mission ID, display name, map, enable/unlock state, optional prerequisite, and travel options.
 
 ---
 
-## Player Profile
+## Offline Setup
 
-### Profile Information
+Free Flight and Play Mission setup use configurable option arrays for:
 
-#### Account Details
-- **Player Name** — Callsign/Username
-- **Rank** — Current player rank
-- **Level** — Experience level
-- **Skill Rating** — Competitive ranking
-- **Join Date** — When account created
-- **Total Playtime** — Hours played
+- Aircraft class
+- Loadout ID
+- Map
+- AI class/count/difficulty
+- Control mode
+- Grounded or airborne start defaults
 
-#### Statistics
-- **Total Kills** — Career eliminations
-- **Total Deaths** — Times eliminated
-- **K/D Ratio** — Kill/Death ratio
-- **Win Rate** — Percentage of matches won
-- **Missions Completed** — Single-player progress
-- **Campaign Progress** — Highest mission reached
+The supplied root presents AI as `Normal` and `Advanced`. These map into the underlying AI difficulty configuration; the full internal AI component also supports additional tuning presets.
 
-### Loadouts
-
-#### Loadout Management
-
-Each loadout saves:
-- **Aircraft** — Chosen aircraft
-- **Weapons** — Gun/Rocket/Missile/Flare count
-- **Camouflage** — Paint scheme/cosmetics
-- **Name** — Custom loadout name
-
-#### Quick Loadouts
-
-- **Loadout 1-5** — Five quick-select loadouts
-- **Rename** — Customize loadout names
-- **Copy** — Duplicate existing loadout
-- **Delete** — Remove unused loadout
-
-### Account Settings
-
-- **Username** — Change player name (available once per month)
-- **Email** — Update email address
-- **Privacy** — Control visible statistics
-- **Crossplay** — Enable/Disable cross-platform play
-- **Notifications** — Game notifications on/off
+The menu passes the selected setup through travel options and the game mode applies it when the destination map starts.
 
 ---
 
-## In-Game UI
+## Multiplayer UI
 
-### Pause Menu
+Private/public session menus support:
 
-When paused (Escape or P key):
+- Player identity and team selection
+- Map selection
+- Server name
+- Maximum players
+- Host, find, select, and join actions
+- Session rows showing server/map/region/location/player counts
+- EOS configuration/login status for public internet sessions
 
-```
-PAUSED
-├── Resume Game
-├── Settings
-│   ├── Audio
-│   ├── Graphics
-│   ├── Gameplay
-│   └── Controls
-├── Statistics (Mission/Match stats)
-├── Objectives (Current mission objectives)
-└── Exit to Menu
-```
+Public Host/Join remain disabled until EOS is configured, initialized, and the local user is logged in. While login is active, the UI can show `Connecting to EOS...`; configuration or login failures keep public actions unavailable with a status message.
 
-### Mission Statistics
-
-During mission pause:
-- **Elapsed Time** — Mission duration so far
-- **Targets Destroyed** — Kill count
-- **Accuracy** — Gun accuracy percentage
-- **Fuel Remaining** — Percentage
-- **Damage Taken** — Cumulative damage
-- **Checkpoints** — Mission checkpoints reached
-
-### Match Statistics
-
-During multiplayer pause:
-- **Match Time** — Duration so far
-- **Your Score** — Personal score
-- **Team Score** — Team total
-- **K/D Ratio** — Current ratio this match
-- **Objective Progress** — CTF/KotH progress
+The supplied multiplayer game flow is team-based and uses listen-server sessions. It does not include ranked matchmaking, a browser-side ping meter, manual IP entry, or built-in voice chat.
 
 ---
 
-## Results Screen
+## Deployment UI
 
-### Mission Results
+The deployment widget uses a two-screen switcher:
 
-After mission completion:
+- Main deployment selection
+- Selected multiplayer loadout
 
-```
-MISSION COMPLETE
-├── Score: 15,750
-├── Time: 12:34
-├── Accuracy: 72%
-├── Bonus Unlocked: New Aircraft
-├── Continue / Return to Menu
-```
-
-**Detailed breakdown:**
-- Base score
-- Time bonus/penalty
-- Accuracy bonus
-- No-damage bonus
-- Completion rank (C-B-A-S)
-
-### Match Results
-
-After multiplayer match:
-
-```
-MATCH RESULTS - VICTORY
-├── Winner: Red Team
-├── Final Score: 35 - 18
-├── Your Stats:
-│   ├── Kills: 8
-│   ├── Deaths: 2
-│   ├── Objectives: 5
-├── XP Gained: +500
-└── Return to Menu
-```
+Like the root menu, the transition animation is assigned in the widget defaults. Deployment leads into the selected jet/loadout spawn workflow.
 
 ---
 
-## HUD Customization
+## Settings Pages
 
-### HUD Options
+`UAT_GM_SettingsPanelWidget` supports Apply, Save, Reset, category navigation, unsaved-change tracking, and optional widget-name bindings.
 
-**Edit → Project Settings → Engine → Slate → HUD**
+### Graphics
 
-Customize:
-- HUD scale (50-200%)
-- HUD opacity (0-100%)
-- Font size
-- Color scheme (Standard/Amber/Custom)
-- Element visibility (show/hide individual elements)
+- Resolution
+- Window mode
+- VSync
+- Frame limit
+- Overall graphics quality
+- View distance quality
+- Shadow quality
+- Effects quality
+- Post-process quality
 
-### Minimal HUD
+### Visual
 
-"Minimal HUD" mode removes non-critical elements:
-- Removes crosshairs and reticles
-- Hides score display
-- Hides warnings (except critical)
-- Shows only essential flight instruments
-- Maximum immersion
+- Brightness/gamma
+- Bloom enabled
+- Motion blur enabled
+- Camera shake enabled
+- Camera shake strength
+- Lens flare enabled
+- Jet exhaust FX mode
 
----
+The exhaust selector supports Niagara, Static Mesh + Material, and the combined mode. Static Mesh + Material is the recommended performance baseline.
 
-## Tutorial & Help System
+### Audio
 
-### Tutorial Videos
+- Music enabled
+- Master volume
+- Music volume
+- SFX volume
+- UI volume
+- Engine volume
+- Weapon volume
 
-Available in settings:
-- **Flight Basics** — Takeoff and landing
-- **Combat** — Dogfighting and weapons
-- **Multiplayer** — Online gameplay
-- **Settings** — Configuration guide
+The assigned sound mix and sound classes determine which assets each slider controls.
 
-### In-Game Tips
+### Controls
 
-- **Loading screens** — Strategy tips
-- **First mission intro** — Hands-on tutorial
-- **Context help** — Available in all menus
+- Flight control mode
+- Mouse sensitivity
+- Controller sensitivity
+- Gamepad deadzone
+- Invert pitch
+- Invert yaw
 
-### Help Menu
+Control modes are Arcade, Normal, Advanced, and Realsim. Input actions/axes remain part of the project input setup; this settings page does not provide a full runtime key-rebinding editor.
 
-Access via **Settings → Help**:
-- **Keyboard Layout** — All default controls
-- **Game Terms** — Glossary of aviation/gaming terms
-- **FAQ** — Common questions
-- **Support** — Contact information
+### UI
 
----
+- Show HUD
+- Show target markers
+- Show guide window
 
-## Accessibility Options
+Legacy optional bindings for HUD scale/help remain for compatibility with older layouts, but they are not required by the current UI Settings workflow.
 
-### Visual Accessibility
+### Profile
 
-- **Color Blind Mode** — Deuteranopia/Protanopia/Tritanopia support
-- **Text Size** — 80-200% scaling
-- **High Contrast** — Enhanced visibility mode
-- **Font Selection** — Clear/Bold fonts
-- **UI Scaling** — Independent from HUD scaling
+- Current username display
+- Username edit/save/reset
+- Validation status
 
-### Audio Accessibility
-
-- **Subtitles** — On/Off for all dialogue
-- **Visual Warnings** — Flashing/color-coding instead of audio
-- **Mono Audio** — Mono instead of stereo
-- **Hearing Aid Compatible** — Special audio processing
-
-### Motor Accessibility
-
-- **Remappable Controls** — All keys customizable
-- **Adjustable Dead Zones** — Gamepad sensitivity
-- **Hold Instead of Toggle** — Options to hold keys instead of tap
-- **Autorun** — Auto-cruise option for flight
-- **Simplified Controls** — Reduced button count mode
+Profile region/location are collected by the startup profile workflow and stored by the same user-settings subsystem.
 
 ---
 
-## Customization & Cosmetics
+## Pause, Results, and Death Flow
 
-### Aircraft Cosmetics
+The game mode supports pause/menu travel, mission result widgets, a killed-in-action countdown, respawn, and spectator presentation.
 
-- **Paint Schemes** — Different liveries
-- **Decals** — Custom nose art
-- **Numbers** — Squadron numbers
-- **Pilot Callsigns** — Radio callsign display
+When another player or AI causes the elimination, the death flow can show:
 
-### Cockpit Customization
+- Killer name
+- Aircraft display name
+- Loadout
+- Flight/control model
+- AI difficulty where applicable
+- Location metadata
 
-- **Interior Colors** — Cockpit color schemes
-- **Instrument Styling** — HUD color variants
-- **Seat Textures** — Pilot seat cosmetics
-
----
-
-## Settings Tips
-
-1. **Start with presets** — Use quality presets, then customize
-2. **Match your hardware** — Set graphics appropriate for your GPU
-3. **Audio balance** — Adjust warning volume higher for safety
-4. **Control sensitivity** — Higher sensitivity = twitchy; lower = smooth
-5. **Save custom settings** — Name your configuration for easy recall
-6. **Test after changes** — Verify settings in training before mission
-7. **Check accessibility** — Use color-blind mode if applicable
-8. **Experiment** — Try different settings to find your preference
+Unknown or non-applicable fields remain visible with an `Unknown` value so Blueprint-designed rows and borders keep a stable layout. A world spectator camera can observe the killer during the respawn countdown; self-elimination does not require killer spectating.
 
 ---
 
-## Next Steps
+## Widget Binding Pattern
 
-- **Customize controls:** Settings → Controls
-- **Adjust graphics:** Settings → Graphics
-- **Create loadouts:** Player Profile → Loadouts
-- **Start playing:** Single Player or Multiplayer
+Many base widgets support two approaches:
+
+1. Keep the documented default widget names.
+2. Give widgets custom names and assign those names in the Blueprint Class Defaults binding structure.
+
+The second approach is useful when an inherited C++ property already uses a desired name. Renaming a UMG widget is safe when the corresponding Class Defaults binding is updated to match.
+
+Optional widgets may be omitted without breaking unrelated features. Required workflow controls should be tested after every rename.
 
 ---
 
-**Customize your experience. Optimize your settings. Take flight.**
+## Saving and Applying
+
+Settings and profile data are stored locally through `UAT_GM_UserSettingsSubsystem`. Use:
+
+- Apply to update runtime behavior.
+- Save to persist the current values.
+- Reset to restore the configured defaults.
+
+The subsystem applies game-user settings, visual console settings, input settings, UI visibility, brightness overlay, volume classes, and the stored control mode.
+
+See also:
+
+- [Quick Start](QUICK_START.md)
+- [Inputs](INPUTS.md)
+- [EOS Setup](EOS_SETUP.md)
+- [Settings Reference](SETTINGS_REFERENCE.md)

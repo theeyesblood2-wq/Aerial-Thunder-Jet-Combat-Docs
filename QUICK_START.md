@@ -1,162 +1,246 @@
 # Quick Start Guide
 
-**Tested on:** UE 5.7 (C++ Project)  
-**Platform:** Windows / Win64
+**Tested on:** Unreal Engine 5.7  
+**Platform:** Windows / Win64  
+**Project type:** C++
 
 ---
 
-## Installation (5 minutes)
+## Installation
 
-### Step 1: Open the Project
-1. Launch Unreal Engine 5.7
-2. Open the **Aerial Thunder** project
-3. Allow the editor to compile C++ modules if prompted (may take 2-5 minutes)
-4. Wait for the editor to fully load
+### 1. Install the Required Tools
 
-### Step 2: Verify Plugin Compilation
-After the editor opens:
-- Both `AT_GM` and `Jet_C_MT` plugins should be enabled
-- Check **Edit → Plugins** and search for "Aerial" or "Jet"
-- Both plugins should show as "Enabled"
-- Restart the editor if you enabled them for the first time
+Install:
 
-### Step 3: First Launch
-1. Navigate to **Content Browser**
-2. In the top-right, enable **View Options → Show Plugin Content**
-3. Browse to `AT_GM Content / Maps / MainMenu`
-4. Double-click **MainMenu** to load it
-5. Press **Play** in the editor toolbar
+- Unreal Engine 5.7
+- Visual Studio 2022
+- Desktop development with C++
+- Unreal Engine installer and tooling components in Visual Studio
 
----
+### 2. Open the Project
 
-## Your First Flight (10 minutes)
+1. Open `AT_JetMP.uproject`.
+2. Select **Yes** if Unreal Engine asks to rebuild project modules.
+3. Wait for C++ compilation and asset discovery to finish.
+4. Restart the editor if Unreal Engine requests it after enabling a dependency.
 
-### From Main Menu
-1. **Single Player** → Select a mission or free flight map
-2. Choose your **Aircraft** (default: F-16)
-3. Select **Difficulty** (Normal is recommended for first flight)
-4. Click **Start**
+Both included runtime plugins must be enabled:
 
-### In-Game Controls
-| Action | Key |
-|--------|-----|
-| **Throttle Up** | Left Shift |
-| **Throttle Down** | Left Ctrl |
-| **Pitch** | W (up) / S (down) |
-| **Roll** | A (left) / D (right) |
-| **Yaw** | Q (left) / E (right) |
-| **Brake** | Space |
-| **Change Camera** | V |
-| **Fire Gun** | Left Mouse Button |
-| **Fire Rockets** | Right Mouse Button |
-| **Pause** | Escape |
+- `AT_GM`
+- `Jet_C_MT`
 
-For the complete control list, see [Input & Controls](INPUTS.md).
+### 3. Open the Main Menu
 
-### Basic Flight
-1. **Start your engine:** Press **Enter**
-2. **Take off:** Increase throttle with **Left Shift** while pitching up with **W**
-3. **Level flight:** Press **H** for auto-level assistance
-4. **Land:** Reduce throttle and lower the nose gently
-5. **Deploy landing gear:** Press **G** before landing
+The configured editor and game startup map is:
 
-### First Combat
-1. **Find a target:** Look around with the mouse
-2. **Auto-target:** Press **T** to lock onto the nearest enemy
-3. **Fire gun:** Hold **Left Mouse Button**
-4. **Fire rockets:** Press **Right Mouse Button** (one round per press)
-5. **Evade:** Roll and pitch away, deploy flares with **X** if locked on
+```text
+/Game/AT_Games/AT_GM_Base/Maps/Map_MainMenu
+```
+
+Open that map and press **Play**.
 
 ---
 
-## Single-Player Campaign
+## Create a Player Profile
 
-### Missions
-Aerial Thunder includes three complete campaign missions:
-1. **Infiltration** — Scout and mark targets
-2. **Defense** — Protect friendly assets
-3. **Strike** — Destroy high-value targets
+On the first launch:
 
-### Mission Progress
-- Complete objectives shown in the cockpit HUD
-- Watch for radio callouts and warnings
-- Return to base or designated area to complete
-- Results screen shows your performance
-- Progress is saved automatically
+1. Select a region.
+2. Enter a location name.
+3. Enter a pilot username.
+4. Save the profile.
 
-### Difficulty Levels
-- **Normal** — Recommended for learning
-- **Advanced** — Challenging AI and tighter mission constraints
-- **Ace** — Maximum difficulty with expert AI tactics
+The profile UI limits username and server-name length and rejects configured blocked words. Saved profile values are reused by menus, sessions, multiplayer player state, and the killed-in-action information card.
 
 ---
 
-## Local Multiplayer (Editor)
+## Your First Flight
 
-### Setting Up a Local Match
-1. In the editor, open any multiplayer map (e.g., `DogfightArena`)
-2. In **Play Settings**, set **Number of Players** to 2 or more
-3. Set **Net Mode** to **Play as Listen Server**
-4. Click **Play**
+### Free Flight
 
-The editor will spawn multiple players locally for testing.
+From the main menu:
 
-### Private LAN Multiplayer
-1. Build the project in Development Editor or Shipping
-2. Run multiple instances on the same network
-3. One player hosts (listens); others join via IP address
-4. All gameplay is replicated and server-authoritative
+1. Open **Single Player**.
+2. Select **Free Flight**.
+3. Select an aircraft, loadout, map, and control mode.
+4. Start the game.
+
+### Basic Controls
+
+| Action | Default input |
+|---|---|
+| Start engine | Enter |
+| Throttle up / down | Left Shift / Left Ctrl |
+| Pitch | W / S |
+| Roll | A / D |
+| Yaw | Q / E |
+| Brake | Space |
+| Auto level | H |
+| Landing gear | G |
+| Change camera | V |
+| Reset camera | 5 |
+| Camera zoom | Mouse wheel |
+
+For every configured input, see [Input and Controls](INPUTS.md).
+
+### Airborne Start
+
+An airborne start spawns and possesses the selected jet in flight. Apply throttle, use gentle pitch and roll inputs, and press **H** when you want auto-level assistance.
+
+### Grounded Start
+
+For a grounded start:
+
+1. Press **Enter** to start the engine.
+2. Hold **Left Shift** to increase throttle.
+3. Steer with yaw while on the ground.
+4. Use **Space** for braking.
+5. Pitch up after reaching takeoff speed.
+6. Press **G** to raise the landing gear after takeoff.
+
+### Landing
+
+1. Reduce throttle before the approach.
+2. Press **G** to lower the landing gear.
+3. Use the landing assistance and smoother control response during approach.
+4. Align with the runway, carrier, or configured landing surface.
+5. Touch down gently and apply **Space** to brake.
+
+Gear transitions and their audio are protected by a Blueprint-editable cooldown.
 
 ---
 
-## Public Multiplayer (EOS)
+## First Combat
 
-Public internet multiplayer requires Epic Online Services configuration.
+| Action | Default input |
+|---|---|
+| Fire gun | Left Mouse Button |
+| Fire rockets | Right Mouse Button |
+| Fire missile | Middle Mouse Button |
+| Deploy flares | X |
+| Toggle automatic targeting | T |
+| Next / previous target | 1 / 2 |
+| Toggle manual targeting | 3 |
+| Manual target lock | 4 |
+| Toggle warning system | K |
 
-**Before attempting public multiplayer:**
-1. Review [EOS Setup](EOS_SETUP.md)
-2. Configure your EOS credentials
-3. Enable EOS in project settings
-4. Restart the editor
+### Automatic Targeting
 
-Once configured:
-1. From main menu, select **Multiplayer**
-2. Choose **Public Match** (only available if EOS is configured)
-3. Select region and game mode
-4. Click **Join**
+Automatic targeting uses the forward targeting workflow, target widget, and targeting audio. Toggle it with **T**, cycle targets with **1** and **2**, then fire a missile after a valid lock.
 
-If public matchmaking is unavailable, EOS is not yet enabled. See [EOS Setup](EOS_SETUP.md).
+### Manual Targeting
+
+Manual targeting is a separate cockpit workflow. Press **3** to switch modes and use **4** to control the manual lock. The automatic target widget and lock audio are suppressed while manual targeting is active.
 
 ---
 
-## Common Issues
+## Missions
 
-### Project Won't Compile
-**Solution:** Ensure you have Visual Studio 2022 installed with C++ development tools. Restart the editor and retry.
+Aerial Thunder includes three extendable missions:
 
-### Game Crashes on Launch
-**Solution:** Delete the `Intermediate` and `Binaries` folders. Reopen the project and recompile.
+### Mission 01 - Flight Training
 
-### Controls Don't Respond
-**Solution:** Ensure the viewport is focused (click in the game window) and pause is not active (press Escape).
+- Airborne introduction
+- Training waypoint route
+- Standard and more demanding waypoint sections
+- Mission completion unlocks Mission 02
 
-### Can't Join Multiplayer
-**Solution:** Verify both players are on the same network and one is running as listen server. See [Troubleshooting](TROUBLESHOOTING.md).
+### Mission 02 - Takeoff and Landing Training
 
-### EOS Login Fails
-**Solution:** Check your EOS configuration and restart the editor. See [EOS Setup](EOS_SETUP.md).
+- Grounded start
+- Takeoff and landing workflow
+- Mission completion unlocks Mission 03
+- Result screen can launch the next configured mission
+
+### Mission 03 - Combat Mission
+
+- Fade-in start without requiring a Level Sequence
+- ATC and pilot radio sequence
+- Entry waypoint
+- Targets activated when the waypoint is passed
+- AI combat, required target tracking, timer, and action music
+- Mission success, failure, and result handling
+
+Mission 03 demonstrates the reusable systems intended for Mission 04, Mission 05, and later custom missions.
+
+---
+
+## Local Multiplayer Test
+
+Use multi-player PIE before testing over the internet:
+
+1. Open an online gameplay map such as `Map_Online_A` or `Map_Online_B`.
+2. Open the Play settings.
+3. Set the number of players to 2.
+4. Use a listen-server PIE configuration.
+5. Start PIE and test host and joined-client behavior separately.
+
+Test movement, slow nearby passes, weapons, flares, exhaust, elimination, spectating, and respawn from both windows.
+
+---
+
+## Private and Public Sessions
+
+### Private Session Workflow
+
+The provided private lobby supports hosting, finding, selecting, and joining sessions. The host can configure the map, region/location display, server name, team, and maximum player count through the supplied UI.
+
+### Public EOS Workflow
+
+Public internet multiplayer is optional and requires developer-owned EOS credentials.
+
+Before testing public sessions:
+
+1. Complete [EOS Setup](EOS_SETUP.md).
+2. Confirm the active online subsystem is EOS.
+3. Confirm EOS initializes successfully.
+4. Complete local-player EOS login.
+5. Restart the editor after changing EOS configuration.
+
+When EOS is not ready, offline gameplay remains available and public Host/Join controls stay disabled with a setup status message.
+
+---
+
+## Common First-Run Issues
+
+### Project Does Not Compile
+
+- Confirm Unreal Engine 5.7 is installed.
+- Confirm Visual Studio 2022 C++ and Unreal Engine components are installed.
+- Right-click the `.uproject` and regenerate project files if required.
+- Rebuild the editor target from Visual Studio or Unreal Build Tool.
+
+### Input Does Not Respond
+
+- Click the game viewport to give it focus.
+- Confirm the pause menu is closed.
+- Confirm the local player possesses the jet.
+- Check `Config/DefaultInput.ini` or your replacement input bindings.
+
+### Public Buttons Stay Disabled
+
+This is expected when EOS is disabled, incomplete, still connecting, or login failed. Follow [EOS Setup](EOS_SETUP.md) and read the status message in the public multiplayer UI.
+
+### A Packaged Build Behaves Differently
+
+- Test with a Development package first.
+- Inspect the packaged logs.
+- Confirm every travel map is cooked.
+- Confirm required Blueprint classes and maps are assigned.
+- Confirm EOS artifacts match the current build when testing public multiplayer.
+
+See [Troubleshooting](TROUBLESHOOTING.md) for deeper checks.
 
 ---
 
 ## Next Steps
 
-- **Learn all controls** → [Input & Controls](INPUTS.md)
-- **Understand the architecture** → [Architecture Overview](ARCHITECTURE.md)
-- **Master flight mechanics** → [Flight & Cameras](FLIGHT_AND_CAMERAS.md)
-- **Set up multiplayer** → [Multiplayer](MULTIPLAYER.md)
-- **Configure EOS** → [EOS Setup](EOS_SETUP.md)
-- **Troubleshoot issues** → [Troubleshooting](TROUBLESHOOTING.md)
+- Learn all controls in [Input and Controls](INPUTS.md).
+- Understand ownership in [Architecture Overview](ARCHITECTURE.md).
+- Review jet handling in [Flight and Cameras](FLIGHT_AND_CAMERAS.md).
+- Review combat in [Weapons and Targeting](WEAPONS_AND_TARGETING.md).
+- Configure public multiplayer in [EOS Setup](EOS_SETUP.md).
 
 ---
 
-**Ready to fly?** Load the main menu and press Play. Welcome to Aerial Thunder!
+Load the main menu, create a profile, and begin with Free Flight or Mission 01.

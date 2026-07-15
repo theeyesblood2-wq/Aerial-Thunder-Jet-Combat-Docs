@@ -2,248 +2,249 @@
 
 **Engine:** Unreal Engine 5.7  
 **Platform:** Windows / Win64  
-**Project Type:** C++ Game Template  
-**Support:** See documentation and troubleshooting guides
+**Project Type:** C++ game template with Blueprint-configurable systems  
+**Developer:** JB - AT: Games
 
 ---
 
 ## Overview
 
-Aerial Thunder is a complete, production-ready jet combat game template for Unreal Engine 5.7. It provides a fully functional single-player and multiplayer foundation with replicated flight mechanics, weapons systems, targeting, AI dogfights, missions, UI, audio, visual effects, player progression, and optional Epic Online Services (EOS) support.
+Aerial Thunder is a complete, extendable jet combat game template for Unreal Engine 5.7. It combines replicated jet flight, weapons, targeting, AI dogfights, missions, multiplayer sessions, user interfaces, settings, audio, and visual effects in one playable C++ project.
 
-The project is designed as a ready-to-extend game framework. Developers can replace or expand aircraft, weapons, environments, missions, UI assets, and game rules while maintaining the core architecture.
+The project is intended as a foundation for developers building their own jet game. Aircraft, weapons, maps, missions, UI, audio, effects, and game rules can be replaced or extended without merging the two core plugins.
 
 ### Included Content
 
-Aerial Thunder ships as a **complete content project**, not a content-free plugin:
+Aerial Thunder ships as a complete example project:
 
-- Fully rigged and UE-scaled F-16 exterior aircraft with 4K materials
-- Fully rigged and UE-scaled F-16 cockpit interior with 4K materials
-- Functional cockpit HUD, radar, TAD (Tactical Air Display), and targeting systems
-- Three playable mission maps and example environments
-- Complete aircraft, cockpit, weapon, target, and UI Blueprints
-- Sound effects, radio dialogue, warning systems, and music
-- Materials, textures, particle systems, Niagara FX, and animations
-- Single-player campaign, private LAN/editor multiplayer, and public EOS multiplayer
-- Main menu, deployment, settings, loading, result, and death UI screens
+- Rigged, UE-scaled F-16 exterior aircraft with high-resolution materials
+- Rigged, UE-scaled F-16 cockpit interior with high-resolution materials
+- Cockpit HUD, radar display, TAD capture display, and targeting systems
+- Free-flight, mission, and online example maps
+- Aircraft, weapon, target, mission, menu, settings, and deployment Blueprints
+- Sound effects, radio dialogue, warning audio, action music, and UI audio
+- Materials, textures, Niagara and Cascade effects, animations, and UI assets
+- Single-player, mission, local multiplayer test, private session, and public EOS workflows
+- Main menu, loading, deployment, pause, result, killed-in-action, and settings screens
 
-**Note:** Included environments are functional examples. You are expected to create or import your own production maps, atmospheric effects, additional aircraft variants, and additional weapons systems.
+The included environments are functional examples. Production releases will normally add custom maps, atmosphere, aircraft variants, weapons, effects, and UI art.
 
 ---
 
 ## Quick Links
 
-- **[Quick Start Guide](QUICK_START.md)** — Installation, first launch, and basic gameplay
-- **[Input & Controls](INPUTS.md)** — Default keyboard/mouse mappings and Enhanced Input setup
-- **[Architecture Overview](ARCHITECTURE.md)** — Plugin structure and core systems
-- **[Flight & Cameras](FLIGHT_AND_CAMERAS.md)** — Flight modes, camera systems, and controls
-- **[Weapons & Targeting](WEAPONS_AND_TARGETING.md)** — Gun, rockets, missiles, flares, and targeting
-- **[HUD & Radar](HUD_AND_RADAR.md)** — Cockpit displays, HUD elements, and radar systems
-- **[AI System](AI_SYSTEM.md)** — AI fighter behavior, difficulty, and dogfight tactics
-- **[Mission System](MISSION_SYSTEM.md)** — Mission framework, objectives, and progression
-- **[Multiplayer](MULTIPLAYER.md)** — Networking, replication, sessions, and matchmaking
-- **[EOS Setup](EOS_SETUP.md)** — Epic Online Services configuration for public multiplayer
-- **[UI & Settings](UI_AND_SETTINGS.md)** — Main menu, settings, player profile, and progression
-- **[FX & Audio](FX_AND_AUDIO.md)** — Particle effects, audio design, and environmental effects
-- **[Settings Reference](SETTINGS_REFERENCE.md)** — Configurable properties and defaults
-- **[Troubleshooting](TROUBLESHOOTING.md)** — Common issues and solutions
-- **[Gallery](GALLERY.md)** — Screenshots and feature overview
+- **[Quick Start Guide](QUICK_START.md)** - Installation, first launch, and first flight
+- **[Input and Controls](INPUTS.md)** - Default keyboard and mouse mappings
+- **[Architecture Overview](ARCHITECTURE.md)** - Plugin ownership and core systems
+- **[Flight and Cameras](FLIGHT_AND_CAMERAS.md)** - Flight presets, cameras, and landing support
+- **[Weapons and Targeting](WEAPONS_AND_TARGETING.md)** - Gun, rockets, missiles, flares, and targeting
+- **[HUD and Radar](HUD_AND_RADAR.md)** - Cockpit displays, radar contacts, and target information
+- **[AI System](AI_SYSTEM.md)** - AI fighter behavior, difficulty, weapons, and avoidance
+- **[Mission System](MISSION_SYSTEM.md)** - Mission directors, waypoints, audio beats, targets, and progression
+- **[Multiplayer](MULTIPLAYER.md)** - Replication, sessions, teams, respawn, and spectating
+- **[EOS Setup](EOS_SETUP.md)** - Optional Epic Online Services configuration
+- **[UI and Settings](UI_AND_SETTINGS.md)** - Menus, profile, settings, and deployment
+- **[FX and Audio](FX_AND_AUDIO.md)** - Exhaust, weather, weapon audio, and feedback
+- **[Settings Reference](SETTINGS_REFERENCE.md)** - Important Blueprint-editable properties
+- **[Troubleshooting](TROUBLESHOOTING.md)** - Common setup and runtime issues
+- **[Gallery](GALLERY.md)** - Project screenshots and feature examples
 
 ---
 
 ## Key Features
 
-### Flight & Movement
-- Replicated multiplayer jet flight with server authority
-- Arcade flight mode for casual players
-- Advanced flight mode for simulation enthusiasts
-- Full 6-DoF flight control (pitch, roll, yaw, throttle)
-- Automatic leveling assistance
-- Landing gear and landing assistance systems
-- Air brake and ground brake controls
-- Engine start/shutdown sequences
+### Flight and Movement
 
-### Weapons & Combat
-- Gun system with tracer rounds
-- Unguided rocket pods
-- Guided missiles with lock-on mechanics
-- Defensive flare deployment
+- Replicated high-speed jet movement
+- Server authority with client prediction, reconciliation, and visual smoothing
+- Arcade and Advanced control presets
+- Pitch, roll, yaw, throttle, braking, and auto-level controls
+- Airborne and grounded start support
+- Landing gear cooldown, gear audio, and configurable landing assistance
+- Ground movement, takeoff, landing, water interaction, crash, and respawn support
+
+### Weapons and Combat
+
+- Replicated machine gun with tracer projectiles and release audio
+- Unguided rockets
+- Lock-on missiles
+- Defensive flares
 - Automatic and manual targeting modes
-- Target lock UI and audio feedback
-- Server-authoritative damage and elimination
+- Configurable ammo and pylon visibility
+- Server-authoritative damage, elimination, and suicide feedback
 
-### Targeting & Awareness
-- Multiplayer radar with friendly/enemy identification
-- Ground target (GroundTGT) and air target (AirTGT) support
-- Tactical Air Display (TAD) with target information
-- Radar signature system
-- Manual and automatic target cycling
-- Target lock warnings and audio alerts
+### Targeting and Awareness
+
+- Radar contacts for multiplayer jets, AirTGT actors, and GroundTGT actors
+- Friendly and enemy color identification
+- Automatic forward targeting with lock UI and audio
+- Manual cockpit targeting using a dedicated capture display
+- Target lock and missile warning feedback
+- Radar signature and marker components
 
 ### Camera System
-- Cockpit view (first-person)
-- Shoulder camera (third-person behind aircraft)
-- Chase camera (distant third-person)
-- Smooth zoom and camera reset
-- Configurable field of view per mode
+
+- Cockpit camera
+- Shoulder camera
+- Chase camera
+- Camera zoom and reset
+- Local camera handling separated from replicated movement
+- Configurable killed-in-action spectator camera behavior
 
 ### AI Combat
-- Intelligent fighter behavior with difficulty presets
-- Normal and Advanced/Ace difficulty tiers
-- Gun and missile tactics
-- Flare defense and countermeasures
-- Obstacle avoidance and terrain awareness
-- Dynamic pursuit and evasion
+
+- Normal and Advanced menu difficulty choices
+- Internal Blueprint-editable AI difficulty presets and weapon damage values
+- Gun and missile attacks
+- Flare defense and threat reaction
+- Pursuit, attack passes, break-away behavior, and six-pressure behavior
+- Terrain and obstacle sensor avoidance
 
 ### Missions
-- Three complete campaign missions
-- Extendable mission framework for custom objectives
-- Radio sequences and narrative integration
-- Dynamic music and action audio
-- Objective tracking and mission timers
-- Mission unlock and progression saving
-- Results screen with statistics
+
+- Mission 01 flight and waypoint training
+- Mission 02 takeoff and landing training
+- Mission 03 combat mission with radio, targets, AI, timer, and action music
+- Reusable MissionDirector, MissionIntroDirector, and waypoint framework
+- Blueprint-editable radio beat sequencing and delays
+- Required target tracking, mission completion, failure, result, and progression saving
+- Mission unlocks and next-mission travel
 
 ### Multiplayer
-- Private LAN and local editor multiplayer
-- Public internet multiplayer via Epic Online Services (EOS)
-- Server-authoritative gameplay
-- Replicated aircraft state and weapons
-- Player profile and loadout customization
-- Region and location-based matchmaking
-- Spectating and respawn systems
-- Killer information cards and KIA countdown
-- Scoreboard and multiplayer dashboard
 
-### UI & Settings
-- Fully featured main menu
-- Deployment/lobby system
-- Settings menu with audio, graphics, and gameplay options
-- Player profile management
-- Aircraft and loadout selection
-- Control scheme configuration
-- Configurable UI transitions and startup logos
+- Local multi-player PIE testing
+- Private session workflow
+- Optional public internet sessions through EOS
+- Replicated aircraft, weapons, damage, targets, teams, and match state
+- TDM scoreboard and multiplayer dashboard
+- Killed-in-action countdown, killer information card, respawn, and spectating
+- Player profile, loadout, control mode, region, and location information
 
-### Audio & FX
-- Cockpit rain and water-drip effects
-- Multiple exhaust modes (static mesh, Niagara, combined)
-- Jet engine audio with speed-responsive sounds
-- Missile launch and impact audio
-- Radio communications and warnings
-- Ambient weather and environmental audio
-- Dynamic music system for mission intensity
-- Warning system with anti-spam cooldowns
+### UI and Settings
+
+- Main menu and deployment workflows
+- Aircraft, loadout, map, control, and AI selection
+- Graphics, audio, visual, controls, UI, and profile settings
+- Saved username, region, location, and EOS login state
+- Configurable screen transitions and startup logo animation
+- Selectable jet exhaust visual mode
+
+### Audio and FX
+
+- Static-mesh, Niagara, and combined engine exhaust modes
+- Long static exhaust support
+- Engine, afterburner, weapon, flare, warning, flyby, and gear audio
+- Distance-limited remote weapon and flare audio
+- Mission radio and action music sequencing
+- Thunder actor with overlap protection
+- Water-surface effects and cockpit rain/drip feedback
+- Warning cooldowns that prevent repeated audio spam
 
 ---
 
 ## Plugin Architecture
 
-Aerial Thunder uses two independent, specialized plugins:
+Aerial Thunder uses two independent runtime plugins.
 
-### AT_GM (Game Module)
-Owns the game framework and global systems:
-- Main menu and deployment workflows
-- Player profile, settings, and progression
-- Mission system, objectives, waypoints, and timers
-- Health, elimination, respawn, and spectating systems
-- Private and public session management
-- Ground and air target systems
-- Match rules, teams, scores, and result screens
-- Thunder/weather actors and environmental systems
+### AT_GM
 
-### Jet_C_MT (Jet Combat Multiplayer Template)
-Owns the aircraft and flight systems:
-- Flight movement and replication
-- Flight control modes (arcade and advanced)
-- Cockpit, shoulder, and chase cameras
+`AT_GM` owns the game framework:
+
+- Main menu, settings, profile, and deployment workflows
+- Missions, objectives, waypoints, progression, results, and loading
+- Health, elimination, respawn, spectating, and killer information
+- Session creation, discovery, joining, teams, scoring, and match state
+- Ground and air target actors
+- Thunder and global game-side systems
+
+### Jet_C_MT
+
+`Jet_C_MT` owns the aircraft:
+
+- Jet movement, prediction, replication, and visual smoothing
+- Control presets and cameras
 - Gun, rocket, missile, and flare systems
 - Automatic and manual targeting
-- Radar and target signatures
-- HUD and cockpit displays
-- Exhaust, water, audio, and visual effects
+- Radar contacts and signatures
+- Cockpit HUD integration
+- Exhaust, water, audio, and feedback systems
 - Landing gear and landing assistance
-- AI fighter behavior and collision avoidance
+- AI fighter behavior and avoidance
 
-**Important:** These plugins must remain independent. `AT_GM` handles the game; `Jet_C_MT` handles the aircraft. Do not merge them.
+> **Architecture rule:** `AT_GM` and `Jet_C_MT` remain separate. Each plugin performs its own job and communicates through exposed runtime data and APIs.
 
 ---
 
 ## Getting Started
 
-### Installation
-1. Open the Aerial Thunder project in Unreal Engine 5.7
-2. Allow the editor to compile C++ modules if prompted
-3. Load the main menu map or a demo level
-4. Begin gameplay
+### Open the Project
 
-### Single-Player & Private Multiplayer
-No additional setup required. Open any level and press Play.
+1. Install Unreal Engine 5.7 and Visual Studio 2022 with Unreal Engine C++ tools.
+2. Open `AT_JetMP.uproject`.
+3. Allow Unreal Engine to compile project modules when requested.
+4. Load `/Game/AT_Games/AT_GM_Base/Maps/Map_MainMenu`.
+5. Press Play.
 
-### Public Multiplayer (EOS)
-Public internet multiplayer requires Epic Online Services configuration. See [EOS Setup](EOS_SETUP.md) for detailed instructions.
+### Offline and Local Testing
+
+Single-player, missions, free flight, and local multiplayer testing work without EOS product credentials.
+
+### Public Multiplayer
+
+Public internet multiplayer requires your own Epic Online Services product, sandbox, deployment, client, and artifact values. The distributed template must not contain the seller's private EOS credentials. Follow [EOS Setup](EOS_SETUP.md).
 
 ---
 
 ## Default Controls
 
-| Action | Key |
-|--------|-----|
-| Throttle Up | Left Shift |
-| Throttle Down | Left Ctrl |
-| Pitch Up/Down | W / S |
-| Roll Left/Right | A / D |
-| Yaw Left/Right | Q / E |
-| Air/Ground Brake | Space |
-| Start Engine | Enter |
-| Toggle Landing Gear | G |
-| Auto Level | H |
-| Change Camera | V |
-| Reset Camera | 5 |
-| Zoom Camera | Mouse Wheel |
-| Fire Gun | Left Mouse Button |
-| Fire Rockets | Right Mouse Button |
-| Fire Missile | Middle Mouse Button |
-| Deploy Flares | X |
-| Auto Targeting | T |
-| Next Target | 1 |
-| Previous Target | 2 |
-| Manual Targeting | 3 |
-| Manual Target Lock | 4 |
-| Warning System | K |
+| Action | Default input |
+|---|---|
+| Throttle up / down | Left Shift / Left Ctrl |
+| Pitch | W / S |
+| Roll | A / D |
+| Yaw | Q / E |
+| Air or ground brake | Space |
+| Start engine | Enter |
+| Toggle landing gear | G |
+| Auto level | H |
+| Change camera | V |
+| Reset camera | 5 |
+| Zoom camera | Mouse wheel |
+| Fire gun | Left Mouse Button |
+| Fire rockets | Right Mouse Button |
+| Fire missile | Middle Mouse Button |
+| Deploy flares | X |
+| Toggle automatic targeting | T |
+| Next / previous target | 1 / 2 |
+| Toggle manual targeting | 3 |
+| Manual target lock | 4 |
+| Toggle warning system | K |
 | Pause | Escape or P |
-| Scoreboard | Tab |
-| Multiplayer Dashboard | U |
-| Skip Mission Intro | Space |
+| TDM scoreboard | Tab |
+| Multiplayer dashboard | U |
+| Skip mission intro | Space, while an intro is active |
 
-These are example mappings. Developers can call exposed C++/Blueprint functions from Enhanced Input or any custom input system. See [Input & Controls](INPUTS.md) for detailed wiring.
+These mappings are defined in the example project's input configuration. The C++ systems also expose callable functions for custom Blueprint or Enhanced Input wiring.
 
 ---
 
-## System Requirements
+## Requirements
 
-- **Engine:** Unreal Engine 5.7
-- **Platform:** Windows / Win64
-- **C++ Compiler:** Visual Studio 2022 or compatible
-- **RAM:** 16 GB minimum (32 GB recommended)
-- **GPU:** DirectX 12 compatible, 6 GB VRAM minimum
-- **Disk Space:** ~50 GB for full project with source
+- Unreal Engine 5.7
+- Windows 64-bit
+- Visual Studio 2022 with Desktop development with C++ and Unreal Engine tooling
+- DirectX 12 compatible hardware suitable for Unreal Engine 5 projects
 
 ---
 
 ## Next Steps
 
-1. **First Time?** → Read [Quick Start Guide](QUICK_START.md)
-2. **Learning the Controls?** → Check [Input & Controls](INPUTS.md)
-3. **Understanding the Codebase?** → Review [Architecture Overview](ARCHITECTURE.md)
-4. **Extending the Project?** → See individual system guides
-5. **Setting Up Multiplayer?** → Start with [Multiplayer](MULTIPLAYER.md), then [EOS Setup](EOS_SETUP.md) for public play
+1. Read the [Quick Start Guide](QUICK_START.md).
+2. Review [Input and Controls](INPUTS.md).
+3. Learn the ownership boundary in [Architecture Overview](ARCHITECTURE.md).
+4. Configure public multiplayer only after reading [EOS Setup](EOS_SETUP.md).
+5. Use the individual system guides when extending the project.
 
 ---
 
-## Support & Documentation
-
-Full documentation is included in this repository. Each system has its own detailed guide. If you encounter issues, see [Troubleshooting](TROUBLESHOOTING.md) or review the relevant system documentation.
-
----
-
-**Aerial Thunder** — Ready to extend. Ready to deploy.
+**Aerial Thunder** - a playable jet combat foundation built to be extended.

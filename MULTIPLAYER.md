@@ -1,402 +1,151 @@
-# Multiplayer Guide
+# Multiplayer
 
-## Multiplayer Overview
+Aerial Thunder includes server-authoritative jet combat for local editor testing, private sessions, and public internet sessions through Epic Online Services (EOS).
 
-Aerial Thunder supports three multiplayer modes:
-1. **Local Editor Multiplayer** — Multiple players in editor (testing)
-2. **Private LAN Multiplayer** — Multiple instances on same network
-3. **Public EOS Multiplayer** — Internet multiplayer via Epic Online Services
+> AT_GM and Jet_C_MT remain separate plugins. AT_GM owns the game/session flow. Jet_C_MT owns the jet, flight, weapons, FX, and replication used by the aircraft.
 
----
+## Supported Workflows
 
-## Local Editor Multiplayer
+| Workflow | Online subsystem | Server type | Intended use |
+|---|---|---|---|
+| Multiplayer PIE | Editor configuration | Listen server | Fast local development |
+| Private multiplayer | NULL | Listen server | Local/private testing |
+| Public multiplayer | EOS | Listen server | Internet play across networks |
 
-### Quick Setup
+The supplied project does not include a dedicated-server deployment workflow, direct-IP browser, ranked matchmaking, voice chat, or external anti-cheat integration.
 
-1. **Open multiplayer map** — e.g., `DogfightArena`
-2. **Edit → Project Settings → Engine → Play**
-3. **Set "Net Mode"** to "Play as Listen Server"
-4. **Set "Number of Players"** to 2, 3, or 4
-5. **Click Play**
+## Private Multiplayer
 
-### Editor Multiplayer Features
+Private multiplayer is available without EOS credentials. It uses the NULL subsystem and a listen-server session.
 
-- **Multiple viewports** — Each player has separate window
-- **Replicated gameplay** — Actions sync across all clients
-- **Server authoritative** — First player is server
-- **Perfect for testing** — Verify multiplayer logic locally
-- **No network lag** — Instant feedback (unrealistic but useful for testing)
+### Host
 
-### Limitations
+1. Open the private multiplayer screen.
+2. Select the player team.
+3. Select the map.
+4. Choose the maximum player count.
+5. Enter a valid server name.
+6. Press **Host**.
 
-- **Local only** — Can't play with remote players
-- **Single PC only** — All players run on same computer
-- **Performance** — Can be CPU intensive for 4+ players
-- **Not realistic** — No network lag simulation
+### Join
 
----
+1. Open the private multiplayer screen.
+2. Select the player team.
+3. Press **Find**.
+4. Select a session result.
+5. Press **Join**.
 
-## Private LAN Multiplayer
+Session rows can display the server name, map, host region, host location, current players, and maximum players.
 
-### Setup for LAN Play
+## Public EOS Multiplayer
 
-#### Build the Project
+Public multiplayer uses EOS Sessions V2. It is intentionally unavailable in the Fab-ready template until EOS is configured and the local player completes login.
 
-1. **File → Package Project → Windows (64-bit)**
-2. Choose output directory
-3. Wait for build to complete (10-20 minutes)
+The public screen distinguishes these states:
 
-#### Run Server
+| State | Result |
+|---|---|
+| EOS is not configured | Public Host/Join stay disabled and setup guidance is shown |
+| EOS is connecting | The UI reports that EOS login is in progress |
+| EOS login failed | Public actions stay disabled and the UI reports the failure |
+| EOS is initialized and logged in | Public Host/Find/Join become available |
 
-1. Run the executable with parameter: `-server`
-2. Game starts in server mode (background, no viewport)
-3. Server listens on default port (7777)
+See [EOS Setup](EOS_SETUP.md) for the complete configuration procedure.
 
-#### Run Clients
+## Player Profile Data
 
-1. Run multiple instances of the executable (normal mode)
-2. Each player selects "Join Game"
-3. Prompt for server IP address
-4. Enter server IP (e.g., "192.168.1.100")
-5. Players connect and spawn in game
+The root menu stores the player's display name, region, and location. In multiplayer, the authoritative PlayerState replicates:
 
-### LAN Multiplayer Features
+- Team
+- Kill count
+- Death count
+- Alive state
+- Player region
+- Player location
 
-- **Full replication** — All gameplay replicated across network
-- **Server authoritative** — Server controls all game logic
-- **Listen server** — Server can also be a player
-- **Lag simulation** — Network latency affects gameplay (realistic)
-- **Customizable maps** — Any multiplayer map can be hosted
+The same profile data is used by session results and the killed-in-action killer card. AI difficulty is shown for AI eliminations; it remains `Unknown` for human players because it is not a multiplayer player attribute.
 
-### Server Configuration
+## Team Deathmatch Flow
 
-**Server startup command line:**
-```
-AerialThunder.exe -server -log
-```
+The supplied multiplayer game flow includes:
 
-**Additional parameters:**
-- `-game` — Specify map (default: MainMenu)
-- `-port=7777` — Specify port
-- `-numplayers=4` — Max players
-- `-dedicated` — Dedicated server (no player viewport)
+- Team A, Team B, and optional automatic team selection
+- Server-authoritative kills and deaths
+- Alive/inactive player state
+- Team score and match timer presentation
+- Elimination feedback and suicide feedback
+- Killed-in-action countdown
+- Respawn
+- Killer information card
+- Temporary spectating/world camera behavior
 
-### Connecting as Client
+The template does not ship CTF, King of the Hill, free-for-all, progression ranks, XP, or skill rating.
 
-**Command line:**
-```
-AerialThunder.exe 192.168.1.100:7777
-```
+## Authority and Replication
 
-Or use in-game menu:
-1. Main Menu → Multiplayer → Join LAN Game
-2. Enter IP and port
-3. Click Join
+The server owns gameplay truth. Clients request actions and receive authoritative results for:
 
----
+- Pawn spawn and respawn
+- Jet movement state
+- Weapon firing and projectile state
+- Damage, destruction, kills, and deaths
+- Team and player-state data
+- Ground and air target state
+- Multiplayer radar relationships
 
-## Public Multiplayer (EOS)
+Cosmetic presentation is kept local where appropriate. For example, hit feedback intended only for the shooter should not become globally repeated audio.
 
-### Epic Online Services Overview
+## Network Smoothing
 
-Aerial Thunder integrates Epic Online Services (EOS) for:
-- **Player accounts** — Authentication and identity
-- **Sessions** — Matchmaking and lobby management
-- **Progression** — Cross-platform player progression
-- **Friends** — Social features and party system
-- **Achievements** — Cloud-based achievement tracking
-
-### Prerequisites for EOS
-
-1. **Epic Games account** — Personal account at epicgames.com
-2. **EOS Application** — Register application in EOS dashboard
-3. **EOS credentials** — Client ID and Client Secret
-4. **Project configuration** — Add credentials to UE project
-5. **Backend setup** — Deploy dedicated servers or configure peer-to-peer
-
-### EOS Configuration
-
-See [EOS Setup](EOS_SETUP.md) for detailed setup instructions.
-
----
-
-## Game Modes
-
-### Deathmatch (Free-For-All)
-
-**Setup:**
-- 2-8 players
-- No teams
-- Unlimited respawns
-- Time limit: 15 minutes
-
-**Objectives:**
-- Eliminate as many opponents as possible
-- Highest score wins
-- Scoring: +1 point per kill; -1 point per death
-
-**Strategy:**
-- Maintain energy advantage
-- Build distance between fights
-- Use terrain for concealment
-- Coordinate with no one (every player for themselves)
-
-### Team Deathmatch
-
-**Setup:**
-- 2-8 players (divided into 2-4 teams)
-- Teams compete
-- Unlimited respawns
-- Time limit: 20 minutes
-
-**Objectives:**
-- Eliminate opposing team members
-- Highest team score wins
-- Scoring: +1 point per kill; team bonus for squad wipes
-
-**Strategy:**
-- Coordinate with teammates
-- Watch teammates' six
-- Focus fire on single opponents
-- Defend base area
-
-### Capture The Flag (CTF)
-
-**Setup:**
-- 4-8 players (2 teams)
-- Each team defends flag
-- Limited respawns
-- Time limit: 25 minutes
-
-**Objectives:**
-1. Steal enemy flag from their base
-2. Carry flag to your base
-3. Defend your flag from capture
-4. First team to 3 captures wins (or highest at time limit)
-
-**Strategy:**
-- Coordinate flag defense
-- Plan flag runs
-- Establish air superiority over bases
-- Communicate flag locations
-
-### King of the Hill (KotH)
-
-**Setup:**
-- 4-6 players (teams or FFA)
-- Designated airspace is "hill"
-- Unlimited respawns
-- Time limit: 20 minutes
-
-**Objectives:**
-- Control designated airspace
-- Maintain presence in hill for scoring
-- Eliminate threats from hill
-- Highest control time wins
-
-**Strategy:**
-- Gain altitude advantage
-- Use superior energy position
-- Coordinate with teammates for mutual defense
-- Take shifts maintaining control
-
----
-
-## Ranking & Progression
-
-### Player Rank System
-
-**Ranks (0-50):**
-- Rank 0-5: Recruit
-- Rank 6-15: Cadet
-- Rank 16-25: Pilot
-- Rank 26-35: Captain
-- Rank 36-45: Colonel
-- Rank 46-50: Ace
-
-### Experience Points (XP)
-
-XP earned from:
-- **Eliminating opponent** — +100 XP per kill
-- **Mission completion** — +500 XP per mission
-- **Game mode bonus** — +50 XP per game mode played
-- **Team victory** — +200 XP bonus
-- **Match duration** — +5 XP per minute played
-
-### Skill Rating (SR)
-
-Competitive ranking separate from level:
-- **Matches played** — Minimum 10 matches to establish rating
-- **Win/loss ratio** — Primary factor
-- **Elimination ratio** — K/D ratio factored
-- **Team contribution** — Objective play weighted
-- **Skill brackets:**
-  - 0-1000: Beginner
-  - 1000-2000: Intermediate
-  - 2000-3000: Advanced
-  - 3000-4000: Expert
-  - 4000+: Legendary
-
----
-
-## Multiplayer Rules & Settings
-
-### Session Settings
-
-**Host can configure:**
-- **Player limit** — 2-8 players
-- **Time limit** — 10-60 minutes
-- **Score limit** — Optional (game ends at score or time)
-- **Friendly fire** — On/Off (default: Off)
-- **Respawn timer** — 5-30 seconds
-- **Loadout switching** — Allowed/Disabled
-
-### Anti-Cheat System
-
-- **Fair play monitoring** — Unusual player behavior flagged
-- **Damage validation** — Server validates all damage
-- **Movement validation** — Impossible moves rejected
-- **Network timing** — Latency outliers investigated
-- **Reporting system** — Players can report suspicious activity
-
-### Penalties
-
-- **Team killing** — Loss of points/score
-- **Excessive teamkilling** — Temporary ban from mode
-- **AFK (Away from keyboard)** — Auto-kick after 5 minutes
-- **Disconnect** — Replaced by bot; player can rejoin
-- **Cheating suspected** — Account flagged; investigation
-
----
-
-## Multiplayer HUD
-
-### Additional HUD Elements
-
-**Team display:**
-- Teammate callsigns and status
-- Teammate health/damage state
-- Teammate positions on minimap
-
-**Score display:**
-- Current team score vs. opponent
-- Individual player score
-- Kill/death ratio
-- Objective progress (CTF, KotH)
-
-**Minimap:**
-- Friendly positions (blue)
-- Enemy radar contacts (red)
-- Objectives/flags (objective-dependent)
-- Terrain outline
-
-**Scoreboard (Tab key):**
-- All player names and scores
-- K/D ratio
-- Ping (latency) to server
-- Team assignment
-
----
-
-## Network Architecture
-
-### Server Authority
-
-- **All game decisions** made on server
-- **Client sends input** — Player inputs sent to server
-- **Server processes** — Damage, eliminations, scoring
-- **Server replicates** — Updated state sent to all clients
-- **Latency compensation** — Prediction smooths client-side movement
-
-### Replication Priority
-
-**High priority (frequent updates):**
-- Player aircraft position
-- Player health state
-- Active threats (incoming missiles)
-
-**Medium priority (regular updates):**
-- Radar contacts
-- Teammate positions
-- Weapon loadout state
-
-**Low priority (periodic updates):**
-- Score updates
-- Teammate status messages
-- Environmental state
-
-### Latency Handling
-
-- **Client prediction** — Clients predict own aircraft movement
-- **Server authority** — Server validates all critical actions
-- **Lag compensation** — Server accounts for network delay
-- **Acceptable latency** — 0-150 ms optimal; 150-300 ms playable
-
----
-
-## Multiplayer Tips
-
-1. **Communicate with team** — Use voice chat or quick messages
-2. **Call out targets** — Let teammates know what you're engaging
-3. **Watch your six** — Keep aware of teammate positions
-4. **Share radar data** — Report aircraft and air defense positions
-5. **Focus fire** — Team focus fire on single opponent wins fights
-6. **Defend together** — Mutual support improves survival
-7. **Use map knowledge** — Learn terrain for ambush positions
-8. **Manage loadout** — Choose weapons appropriate for mode
-9. **Respect skill levels** — Adjust tactics for opponent ability
-10. **Have fun** — Competitive or casual, enjoy the experience
-
----
-
-## Troubleshooting Multiplayer
-
-### Can't Connect to Server
-
-**Cause:** Server offline, wrong IP, firewall blocking
-**Solution:**
-1. Verify server is running
-2. Confirm IP address and port
-3. Check firewall allows connection
-4. Try "localhost:7777" for local connections
-
-### Lag/Latency Issues
-
-**Cause:** High network latency or packet loss
-**Solution:**
-1. Check internet connection speed (minimum 5 Mbps recommended)
-2. Close other bandwidth-heavy applications
-3. Move closer to router
-4. Try different server with lower ping
-5. Restart game/router
-
-### Disconnects During Game
-
-**Cause:** Network interruption or server crash
-**Solution:**
-1. Verify internet connection stable
-2. Check server status
-3. Rejoin session if still active
-4. Report persistent crashes to developers
-
-### EOS Login Fails
-
-**Cause:** Wrong credentials, network issue, EOS misconfiguration
-**Solution:**
-1. Verify Epic Games account credentials
-2. Check internet connection
-3. Review EOS setup configuration
-4. See [EOS Setup](EOS_SETUP.md) for detailed troubleshooting
-
----
-
-## Next Steps
-
-- **Setup EOS:** [EOS Setup](EOS_SETUP.md)
-- **Join games:** Use in-game Multiplayer menu
-- **Create custom games:** Host server and configure settings
-- **Compete:** Join ranked matches and climb skill ladder
-
----
-
-**Squad up. Lock and load. Go online.**
+The jet movement system includes multiplayer smoothing for remote aircraft. Local and cross-country testing has shown generally clean own-jet movement and usable remote movement.
+
+Real internet conditions can still produce:
+
+- Small remote-jet shake during close, slow passes
+- Brief input or action presentation delay for a joined player
+- Delayed remote flares, rockets, or missiles
+- Short projectile-origin corrections under poor latency
+
+These effects depend on latency, packet timing, frame rate, and the host connection. Test both directions because a host and a joined player observe different network paths.
+
+## Recommended Test Matrix
+
+### Local packaged test
+
+1. Start two packaged clients.
+2. Host a private session.
+3. Join from the second client.
+4. Test normal and high-speed flight.
+5. Perform slow close passes.
+6. Fire every weapon and deploy flares.
+7. Crash both players and verify respawn.
+8. Verify exhaust after respawn.
+9. Verify kills, suicide feedback, killer card, and scores.
+
+### Public EOS test
+
+1. Use two machines on different networks.
+2. Host publicly and join through EOS.
+3. Repeat the movement and combat checks.
+4. Swap host and joined-player roles.
+5. Keep the run short when collecting diagnostic logs.
+
+## Logs
+
+Runtime logs are written under the packaged project's `Saved/Logs` directory. Capture the host and joined-client logs from the same test run.
+
+Useful evidence includes:
+
+- Who hosted and who joined
+- Approximate FPS for both players
+- Connection conditions
+- Exact moment a delay or shake occurred
+- Which weapon or respawn cycle was active
+
+## Related Documentation
+
+- [EOS Setup](EOS_SETUP.md)
+- [Weapons and Targeting](WEAPONS_AND_TARGETING.md)
+- [HUD and Radar](HUD_AND_RADAR.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+- [Architecture](ARCHITECTURE.md)

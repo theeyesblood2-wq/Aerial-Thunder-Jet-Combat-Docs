@@ -1,462 +1,145 @@
-# Epic Online Services (EOS) Setup Guide
+# Epic Online Services Setup
 
-## EOS Overview
+The Fab-ready Aerial Thunder template ships with EOS credentials intentionally blank and public EOS multiplayer disabled. Offline gameplay, missions, editor multiplayer, and private NULL-subsystem sessions remain usable before EOS is configured.
 
-Epic Online Services (EOS) enables Aerial Thunder to support public internet multiplayer with:
-- Player authentication
-- Session management
-- Matchmaking
-- Player progression
-- Social features
+Public multiplayer becomes available only after EOS is configured, initialized, and logged in.
 
----
+## Before You Begin
 
-## Prerequisites
+You need an Epic developer account and an EOS product configuration containing the values required by Unreal Engine:
 
-### Required Accounts & Access
+- Product ID
+- Sandbox ID
+- Deployment ID
+- Client ID
+- Client Secret
+- Client Encryption Key
+- Artifact Name
 
-1. **Epic Games Account**
-   - Create at https://www.epicgames.com
-   - Personal or business account
-   - Free tier is sufficient
+Epic may update the Developer Portal layout. Use the current EOS portal labels that correspond to these Unreal Engine artifact fields.
 
-2. **EOS Developer Account**
-   - Access EOS dev portal at https://dev.epicgames.com
-   - Link Epic Games account
-   - Accept EOS terms of service
+## 1. Enable the Unreal Plugins
 
-3. **EOS Application Registration**
-   - Register application in EOS dashboard
-   - Note: Organization and product names
+In **Edit > Plugins**, enable:
 
-### Technical Requirements
+- Online Subsystem EOS
+- Socket Subsystem EOS
 
-- **Unreal Engine 5.7+** with EOS plugin enabled
-- **Internet connection** — For EOS communication
-- **Server infrastructure** — Dedicated server or cloud hosting
-- **SSL certificate** — For secure communications (optional but recommended)
+Restart the editor after changing plugin state.
 
----
+## 2. Configure the EOS Artifact
 
-## Step 1: Register EOS Application
+Open **Project Settings** and locate the EOS settings. Enter the product, sandbox, deployment, client, and encryption values for your EOS artifact.
 
-### In Epic Games Developer Portal
+Set:
 
-1. Navigate to **EOS Dev Portal** → https://dev.epicgames.com/portal/
-2. Login with Epic Games credentials
-3. Click **"Create New Application"**
-4. Enter application details:
-   - **Application Name:** "Aerial Thunder" or custom name
-   - **Category:** Games
-   - **Deployment:** Select region
-5. Click **Create**
+- `ArtifactName` to your chosen artifact name.
+- `DefaultArtifactName` to exactly the same value, including capitalization.
 
-### Receive Credentials
+An empty or mismatched default artifact prevents the public workflow from becoming ready.
 
-After creation, note these credentials (keep secret):
-- **Client ID** — Application identifier
-- **Client Secret** — Authentication key
-- **Organization ID** — Account organization ID
-- **Product ID** — Application product ID
+## 3. Enable EOS in DefaultEngine.ini
 
-**⚠️ WARNING:** Do NOT share Client Secret or credentials in public repositories.
+Set the active online subsystem to EOS:
 
----
-
-## Step 2: Configure UE Project
-
-### Enable EOS Plugin
-
-1. **Edit → Plugins**
-2. Search "Online Subsystem EOS"
-3. **Check "Enabled"**
-4. Restart editor
-
-### Project Settings Configuration
-
-1. **Edit → Project Settings → Online → EOS**
-2. Set the following:
-
-#### Authentication
-
-```
+```ini
 [OnlineSubsystemEOS]
 bEnabled=True
-CacheDir=Saved/EOS
-
-[OnlineSubsystemEOS.Auth]
-ClientId=YOUR_CLIENT_ID
-ClientSecret=YOUR_CLIENT_SECRET
-bUseProductUserIdCache=True
-CacheExpireTime=86400
-```
-
-#### Session Management
-
-```
-[OnlineSubsystemEOS.Sessions]
-bUseS2SBackend=True
-SessionPort=7777
-MaxPlayers=32
-SessionTimeout=3600
-```
-
-#### Platform Settings
-
-```
-[OnlineSubsystemEOS.Platform]
-bSandboxEnvironment=False
-TickInterval=0.1
-CacheDir=Saved/EOS
-```
-
-### DefaultEngine.ini Configuration
-
-Edit **Config/DefaultEngine.ini** and add/modify:
-
-```
-[/Script/Engine.GameEngine]
-+NetDriverDefinitions=(DefName="GameNetDriver",ClassName="/Script/Engine.GameNetDriver",ClientConnectionClass="/Script/Engine.NetConnection")
-
-[OnlineSubsystemUtils.IpNetDriver GameNetDriver]
-AllowClientNetTravelToMultiplayerMaps=True
 
 [OnlineSubsystem]
 DefaultPlatformService=EOS
-bEnabled=True
-
-[OnlineSubsystemEOS]
-bEnabled=True
-
-[OnlineSubsystemNull]
-bEnabled=False
-
-[OnlineSubsystemSteam]
-bEnabled=False
 ```
 
----
+Keep the project net-driver definition that selects the EOS socket driver with the Unreal IP driver as fallback:
 
-## Step 3: Configure Dedicated Server (if applicable)
-
-### Server Build Options
-
-If using dedicated servers (recommended for scalability):
-
-1. **Build project as dedicated server**
-   ```
-   Unreal Automation Tool BuildCook -project=AerialThunder.uproject -platform=Win64 -configuration=Shipping -cook -server -stage -pak -archive
-   ```
-
-2. **Deploy to server** (AWS, Azure, Google Cloud, etc.)
-
-3. **Configure server parameters:**
-   - Listen port (7777 default)
-   - Max players
-   - Map rotation
-   - Session type (public/private)
-
-### Peer-to-Peer (P2P) Alternative
-
-For smaller deployments, use P2P:
-- **Player connects directly** to host player
-- **No dedicated server** required
-- **Simpler setup** but limited scalability
-- **Better for small player counts** (4-8 players)
-
-**To enable P2P:**
-1. Set `SessionType=P2P` in project config
-2. First player acts as host
-3. Others connect to host IP
-
----
-
-## Step 4: Update PlayerController & GameMode
-
-### Update PlayerController
-
-In your player controller blueprint or C++:
-
-```cpp
-// Connect to EOS on login
-void AYourPlayerController::BeginPlay()
-{
-    Super::BeginPlay();
-    
-    // Initialize EOS authentication
-    IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(EOS_SUBSYSTEM);
-    if (Subsystem && Subsystem->GetAuthInterface().IsValid())
-    {
-        Subsystem->GetAuthInterface()->Login(
-            0,  // LocalUserNum
-            FOnlineAccountCredentials(
-                TEXT("AccountPortal"),
-                TEXT(""), // Auto-login if using device auth
-                TEXT("")
-            )
-        );
-    }
-}
+```ini
+[/Script/Engine.Engine]
+!NetDriverDefinitions=ClearArray
++NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="/Script/SocketSubsystemEOS.NetDriverEOSBase",DriverClassNameFallback="/Script/OnlineSubsystemUtils.IpNetDriver")
 ```
 
-### Update GameMode
+The distributed template may contain disabled or blank placeholder values. Replace them with valid values; do not treat placeholder spelling as a valid EOS configuration.
 
-Ensure GameMode handles session creation:
+## 4. Restart and Log In
 
-```cpp
-// Create EOS session on game start
-void AYourGameMode::PostLogin(APlayerController* NewPlayer)
-{
-    Super::PostLogin(NewPlayer);
-    
-    // Register with EOS session
-    IOnlineSessionPtr SessionInterface = IOnlineSubsystem::Get(EOS_SUBSYSTEM)->GetSessionInterface();
-    if (SessionInterface.IsValid())
-    {
-        FOnlineSessionSettings SessionSettings;
-        SessionSettings.bIsDedicated = true;
-        SessionSettings.NumPublicConnections = 8;
-        SessionSettings.bAllowInvites = true;
-        SessionSettings.bUsesPresence = true;
-        
-        SessionInterface->CreateSession(0, NAME_GameSession, SessionSettings);
-    }
-}
-```
+Restart the editor after configuration. Open the public multiplayer screen.
 
----
+Expected flow:
 
-## Step 5: Test EOS Integration
+1. The UI reports that it is connecting to EOS.
+2. EOS Account Portal login opens when authentication is required.
+3. Complete the Epic login flow.
+4. Public Host/Find/Join become available after login succeeds.
 
-### Local Testing
+Where the platform can restore the login session, later launches can continue without asking the player to repeat the full login flow.
 
-1. **Enable EOS credentials** in project settings
-2. **Run project** in editor or packaged build
-3. **Attempt login** to EOS
-4. **Verify authentication** in EOS dashboard
+## 5. Test a Public Session
 
-### Verify Authentication
+Use packaged development builds on two machines whenever possible.
 
-Check EOS dashboard under **Deployments → Player Logins**:
-- See authenticated player accounts
-- Monitor login/logout events
-- Verify no authentication errors
+1. Confirm both builds use the same EOS product, sandbox, deployment, and artifact.
+2. Sign in with different Epic accounts.
+3. Host a public room on the first machine.
+4. Find and join it on the second machine.
+5. Verify the advertised server name, map, region, location, and player count.
+6. Test gameplay and then swap host roles.
 
-### Test Session Creation
+## Readiness Checks
 
-1. **Create session** from game menu
-2. **Verify in dashboard** → Sessions list
-3. **Join session** from another client
-4. **Verify replication** working correctly
+The public UI does not rely only on `bEnabled`. It also checks whether:
 
----
+- EOS is the selected public subsystem.
+- EOS initialized successfully.
+- A usable artifact is configured.
+- Login is no longer processing.
+- The local identity is logged in.
 
-## Step 6: Deploy to Production
-
-### Pre-Deployment Checklist
-
-- [ ] Client ID and Secret configured (not in builds!)
-- [ ] Server infrastructure deployed
-- [ ] SSL certificates installed (if applicable)
-- [ ] Database connections verified
-- [ ] Backup systems in place
-- [ ] Monitoring/logging configured
-- [ ] Support team trained
-
-### Production Deployment
-
-1. **Build for production**
-   ```
-   Unreal Automation Tool BuildCook -project=AerialThunder.uproject -platform=Win64 -configuration=Shipping
-   ```
-
-2. **Deploy server builds** to hosting provider
-
-3. **Update client builds** with production EOS configuration
-
-4. **Verify connectivity** — Test from live build
-
-5. **Monitor logs** — Watch for connection issues
-
-### Production Configuration
-
-In production config:
-
-```
-[OnlineSubsystemEOS]
-bSandboxEnvironment=False  // Use production environment
-bLogToConsole=True
-LoggingLevel=Verbose
-```
-
----
-
-## Credentials Management (SECURITY)
-
-### Best Practices
-
-⚠️ **NEVER:**
-- Commit credentials to git
-- Include secrets in shipped games
-- Share credentials publicly
-- Use same credentials across environments
-
-### Secure Credential Storage
-
-**Option 1: Environment Variables**
-```cpp
-FString ClientId = FPlatformMisc::GetEnvironmentVariable(TEXT("EOS_CLIENT_ID"));
-FString ClientSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("EOS_CLIENT_SECRET"));
-```
-
-**Option 2: Secure Config Files**
-- Store config on server only
-- Client downloads at launch
-- Config encrypted in transit
-
-**Option 3: Backend Service**
-- Game contacts backend service
-- Backend provides EOS credentials
-- Credentials never stored on client
-
-**Recommended Approach:** Backend service (Option 3) is most secure for production.
-
----
-
-## Common EOS Integration Tasks
-
-### Adding Friends System
-
-```cpp
-void AYourPlayerController::AddFriend(FString FriendUserId)
-{
-    IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(EOS_SUBSYSTEM);
-    IOnlineFriendsPtr FriendsInterface = Subsystem->GetFriendsInterface();
-    
-    FriendsInterface->SendInvite(
-        0,  // LocalUserNum
-        FriendUserId,
-        FString(TEXT("Come fly with me!"))
-    );
-}
-```
-
-### Tracking Player Statistics
-
-```cpp
-void AYourGameMode::RecordPlayerStatistic(APlayerController* Player, int32 Kills)
-{
-    IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(EOS_SUBSYSTEM);
-    IOnlineLeaderboardsPtr LeaderboardInterface = Subsystem->GetLeaderboardsInterface();
-    
-    FOnlineStatsRow StatRow;
-    StatRow.SetIntStat(FName(TEXT("Kills")), Kills);
-    
-    LeaderboardInterface->WriteLeaderboards(nullptr, StatRow);
-}
-```
-
-### Saving Cloud Data
-
-```cpp
-void AYourPlayerController::SaveProgressToCloud(FString JsonData)
-{
-    IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get(EOS_SUBSYSTEM);
-    IOnlineUserCloudPtr CloudInterface = Subsystem->GetUserCloudInterface();
-    
-    CloudInterface->WriteUserFile(
-        0,  // LocalUserNum
-        TEXT("PlayerProgress.json"),
-        TArray<uint8>(reinterpret_cast<uint8*>(TCHAR_TO_ANSI(*JsonData)), JsonData.Len())
-    );
-}
-```
-
----
-
-## Troubleshooting EOS
-
-### Authentication Fails
-
-**Cause:** Wrong credentials, network issue, sandbox/production mismatch
-**Solution:**
-1. Verify Client ID and Secret in project settings
-2. Check EOS dashboard — Verify application active
-3. Confirm internet connection working
-4. Verify sandbox/production environment match
-
-### Sessions Not Appearing in Dashboard
-
-**Cause:** Session not properly registered, network issue
-**Solution:**
-1. Check GameMode creates session (see code example above)
-2. Verify session interface initialized
-3. Monitor logs for errors
-4. Restart application
-
-### Player Progression Not Saving
-
-**Cause:** Cloud save not configured, permissions issue
-**Solution:**
-1. Enable cloud save in project settings
-2. Verify player has write permissions
-3. Check cloud storage quota
-4. Review leaderboard/statistics configuration
-
-### Performance Issues with EOS
-
-**Cause:** Tick rate too high, too many operations
-**Solution:**
-1. Reduce EOS tick rate: `TickInterval=0.2`
-2. Batch operations when possible
-3. Use async operations for I/O
-4. Profile with EOS SDK profiler
-
----
-
-## Monitoring & Maintenance
-
-### EOS Dashboard Monitoring
-
-Regular checks:
-- **Active players** — Monitor concurrent player count
-- **Authentication events** — Check for unusual patterns
-- **Session metrics** — Average session length, churn rate
-- **Error logs** — Review and address errors
-
-### Server Logs
-
-Monitor server-side logs for:
-- Connection issues
-- Authentication failures
-- Session creation/destruction errors
-- Network timeouts
-
-### Player Support
-
-Common issues to address:
-- EOS login failures → Provide account recovery process
-- Session join failures → Troubleshoot network connectivity
-- Cloud save issues → Implement fallback data
-
----
-
-## Next Steps
-
-- **Test locally:** Run in-editor multiplayer with EOS
-- **Setup dedicated servers:** Deploy server infrastructure
-- **Configure matchmaking:** Set up custom matchmaking rules
-- **Launch beta:** Invite players to test EOS integration
-- **Go live:** Deploy to production
-
----
-
-## Additional Resources
-
-- EOS Documentation: https://docs.epicgames.com/en/web-api-ref/epic-online-services/
-- Unreal EOS Plugin: UE5 Plugins → Online Subsystem EOS
-- EOS Dashboard: https://dev.epicgames.com/portal/
-
----
-
-**Prepare your backend. Authenticate your players. Launch online.**
+This prevents public buttons from launching broken requests before setup is complete.
+
+## Common Problems
+
+### Public buttons remain disabled
+
+Check all of the following:
+
+- Both EOS plugins are enabled.
+- `bEnabled=True` is spelled correctly.
+- `DefaultPlatformService=EOS` is present.
+- Artifact fields are not blank.
+- `DefaultArtifactName` exactly matches `ArtifactName`.
+- The editor was restarted after configuration.
+
+### EOS login fails
+
+- Verify the client credentials and deployment.
+- Confirm the Epic account is allowed to use the selected product environment.
+- Review the runtime log for `LogEOS`, `LogEOSSDK`, and identity messages.
+- Keep public actions disabled until login succeeds.
+
+### Host succeeds but the other player finds nothing
+
+- Confirm both clients use the same artifact and deployment.
+- Confirm both players completed login.
+- Confirm the host created a public EOS session, not a private NULL session.
+- Wait for the search operation to finish before pressing Join.
+
+### Private multiplayer stopped working
+
+Private sessions use the NULL subsystem path. Public EOS readiness should not be used to block private editor/local testing.
+
+## Security Notes
+
+- Never publish your real EOS credentials in public documentation, screenshots, or a public source repository.
+- The Fab template should continue to ship with blank project-specific identifiers.
+- Buyers must create and configure their own EOS product.
+
+## Scope
+
+The supplied EOS integration covers public listen-server sessions and Account Portal login. It does not document or promise dedicated servers, EOS voice, friends, stats, achievements, cloud saves, or Steam integration.
+
+## Related Documentation
+
+- [Multiplayer](MULTIPLAYER.md)
+- [Quick Start](QUICK_START.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+- [Architecture](ARCHITECTURE.md)

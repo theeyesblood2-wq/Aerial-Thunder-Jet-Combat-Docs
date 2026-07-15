@@ -1,483 +1,170 @@
-# FX & Audio Guide
+# FX and Audio
 
-## Audio System Overview
+## Overview
 
-Aerial Thunder features a dynamic audio system with:
-- Jet engine sounds with speed-responsive audio
-- Radio communications and warnings
-- Environmental ambience and weather effects
-- Music system that adapts to gameplay intensity
-- 3D positional audio for immersive localization
+Aerial Thunder supplies jet, weapon, weather, mission, impact, and UI feedback systems. Most assets and tuning values are assigned in Blueprint Class Defaults, while the C++ components control runtime behavior, multiplayer ownership, cooldowns, attenuation, and cleanup.
 
 ---
 
-## Engine Audio
+## Engine Exhaust
 
-### Engine Sound Design
+The jet supports three exhaust visual modes:
 
-#### Flight Envelope Audio
-- **Idle** — Quiet turbine hum (landing/taxiing)
-- **Cruise** — Steady jet sound (~350 knots)
-- **Military Power** — Increased turbine sound
-- **Afterburner** — High-intensity roar (if applicable)
+| Mode | Use |
+|---|---|
+| Niagara | Niagara engine exhaust only |
+| Static Mesh + Material | Material-driven static exhaust only |
+| Niagara + Static Mesh + Material | Both systems together |
 
-#### Speed-Responsive Audio
-Engine sound pitch and intensity change based on:
-- **Current throttle** — RPM affects frequency
-- **Airspeed** — Wind noise increases with speed
-- **Altitude** — Less oxygen at altitude affects sound
-- **G-forces** — Strain on engine during maneuvers
+The root Visual Settings page can expose this choice through `JetExhaustFXComboBox`. The supplied default is `Static Mesh + Material`, which is the lighter baseline for multiplayer testing.
 
-#### Temperature Effects
-- **Cold start** — Engine spool-up sounds (5-10 seconds)
-- **Normal operation** — Steady turbine sound
-- **Overheating** — High-frequency whine when hot
-- **Shutdown** — Spool-down noise (engine winding down)
+The static exhaust system supports:
 
-### 3D Engine Audio Positioning
+- A primary exhaust mesh/material drive parameter.
+- Idle and full-scale multipliers.
+- A second long static exhaust with its own parameter and scale values.
+- Boost threshold, boost drive addition, and boost scaling.
+- Local and remote runtime refresh.
+- Airborne spawn and respawn reinitialization.
 
-- **Mono in cockpit** — Equal in both ears from cockpit center
-- **Stereo in external view** — Positioned around aircraft
-- **Directional** — Comes from engine location (rear of aircraft)
-- **Distance fading** — Louder when close, fades with distance
+Niagara and static exhaust are visual choices. Enabling both costs more than using one mode, so profile the combined mode before making it the project default.
 
 ---
 
 ## Weapon Audio
 
-### Gun Sound
+`UJetAudioComponent` separates owner-view and remote playback where needed.
 
-- **Fire tone** — Distinctive cannon report
-- **Tracer impact** — Whip/crack sound at bullet impact
-- **Shell casings** — Metallic pinging (cockpit view)
-- **Overheat** — Whine as gun gets hot
+### Gun
 
-### Rocket Audio
+- Cockpit/shoulder sound
+- Chase sound
+- Remote exterior sound
+- Separate release sound after firing stops
+- Minimum fire time and release cooldown to prevent rapid press/release spam
+- Remote audible-distance control
 
-- **Launch** — Explosive whoosh and roar
-- **Flight** — Rocket motor sound during flight
-- **Impact** — Explosive detonation and rumble
-- **Proximity detonation** — Secondary explosion if near target
+### Rockets and Missiles
 
-### Missile Audio
+- Cockpit/shoulder, chase, and remote launch sounds
+- Explosion/impact sounds
+- Exterior attenuation for remote players and AI
 
-- **Launch** — Distinctive whoosh; more intense than rockets
-- **Flight** — Missile motor sound, diminishing with distance
-- **Impact** — Powerful explosion sound
-- **Lock tone** — Audio signal during target lock/missile tracking
+### Flares
 
-### Flare Audio
+- Local camera-view sounds
+- Remote exterior sound
+- Remote audible-distance control
+- AI flare playback uses positional attenuation instead of global 2D playback
 
-- **Deploy** — Pop/snap as countermeasures dispense
-- **Success** — Different tone if missile detonates on flares
-- **Warning** — Audio alert when flares running low
-
----
-
-## Radio Communications
-
-### Mission Radio
-
-#### Briefing & Callouts
-- **Commander** — Provides mission briefing
-- **Wingmate** — Tactical callouts during flight
-- **Controller** — Mission updates and warnings
-- **Frequency changes** — Realistic radio switching
-
-### Radio Tones
-
-| Tone | Meaning | Response |
-|------|---------|----------|
-| **Chirp (search)** | Radar searching for targets | No immediate action |
-| **Steady tone (lock)** | Enemy locked onto you | Deploy flares & maneuver |
-| **Whooping (threat)** | Missile launched at you | Emergency evasion |
-| **Beep pattern** | Proximity warning | Pull up or break |
-| **Continuous alert** | Critical system failure | Take corrective action |
-
-### Realistic Radio Protocol
-
-- **Callsigns** — Players use assigned callsigns
-- **Brevity codes** — Military abbreviations (Tally = visual contact)
-- **Frequency discipline** — Realistic radio traffic
-- **Squelch tone** — Realistic radio static between transmissions
+The hit-confirmation cue is local to the shooter. It is not broadcast to every player.
 
 ---
 
-## Warning Systems
+## Targeting and Warning Audio
 
-### Audio Warnings
+Automatic and manual targeting are intentionally separate:
 
-#### Altitude Warning
-- **Trigger:** Below 500 feet AGL
-- **Sound:** Intermittent beep/chirp
-- **Response:** Climb or prepare for landing
+- Automatic targeting uses the forward lock UI and lock audio.
+- Manual targeting uses the cockpit capture/TAD workflow and suppresses automatic lock UI/audio.
 
-#### Proximity Warning
-- **Trigger:** Terrain collision imminent
-- **Sound:** Continuous loud beeping
-- **Response:** Immediate pull-up; critical!
+Warning playback includes cooldown/state protection so repeated updates do not restart the same phrase every frame. The implemented feedback covers threat and flight warnings such as missile events and altitude/pull-up conditions. Warning tuning remains Blueprint editable on the jet components.
 
-#### Stall Warning
-- **Trigger:** Airspeed dropping below stall speed (Advanced mode)
-- **Sound:** Repetitive buzzer or horn
-- **Response:** Lower nose, increase throttle
-
-#### Engine Overheat Warning
-- **Trigger:** Engine temperature exceeding safe limits
-- **Sound:** High-frequency whining
-- **Response:** Reduce throttle
-
-#### Fuel Low Warning
-- **Trigger:** Fuel below 20%
-- **Sound:** Recurring warning tone every 10 seconds
-- **Response:** Plan landing
-
-#### Fuel Critical Warning
-- **Trigger:** Fuel below 10%
-- **Sound:** Continuous warning tone
-- **Response:** Land immediately
-
-#### Lock Warning Tone
-- **Trigger:** Enemy radar lock detected
-- **Sound:** Medium-pitched continuous tone (changes based on threat level)
-- **Response:** Deploy flares and maneuver
-
-#### Missile Launch Warning
-- **Trigger:** Missile fired at aircraft
-- **Sound:** Rapid whooping/chirping tone
-- **Response:** Immediate evasion maneuvers
+The project does not implement fuel-low or engine-overheat warning systems.
 
 ---
 
-## Environmental Audio
+## Flyby Audio
 
-### Weather Effects
+Flyby playback is intended for high-speed passes:
 
-#### Rain
-- **Effect:** Rain sound on cockpit canopy
-- **Intensity:** Varies with rain severity
-- **Stops at altitude:** No rain sound above storm clouds
-- **Visual correlation:** Matches visual rain FX
+- A speed threshold rejects slow nearby movement.
+- Distance and pass checks determine eligibility.
+- A cooldown prevents repeated playback during one pass.
+- Playback is local to the listener evaluating the pass.
 
-#### Thunder
-- **Effect:** Distant thunder rumbles
-- **Trigger:** During thunderstorm conditions
-- **Realism:** Random timing; multiple rumbles possible
-
-#### Wind Noise
-- **Effect:** Increases with speed and altitude
-- **Pitch:** Higher pitch at higher speeds
-- **Cockpit:** Primarily affects cockpit view
-
-### Ambient Audio
-
-#### Airfield Ambience
-- **Ground traffic** — Ambient military base sounds
-- **Hangars** — Metal clanging, tools
-- **Radio chatter** — Distant military communications
-
-#### Ocean Ambience
-- **Wave sounds** — Crashing waves if flying low over water
-- **Seagulls** — Distant bird calls
-- **Wind over water** — Sea breeze effects
-
-#### Urban Ambience
-- **City noise** — Traffic and urban sounds
-- **Sirens** — Emergency vehicles (if combat over city)
-- **Wind through buildings** — Architectural effects
+Tune the threshold and cooldown for the scale and speed of the map. Avoid turning flyby into a general proximity loop.
 
 ---
 
-## Music System
+## Landing Gear Audio
 
-### Dynamic Music
-
-Music adapts based on gameplay:
-
-#### Calm/Cruise
-- **Intensity:** Low-moderate
-- **Tempo:** Slow-moderate
-- **Mood:** Peaceful, contemplative
-- **Trigger:** Level flight, no threats detected
-
-#### Combat Alert
-- **Intensity:** Medium-high
-- **Tempo:** Moderate-fast
-- **Mood:** Tension, action
-- **Trigger:** Enemy detected or engaged
-
-#### Dogfight
-- **Intensity:** High
-- **Tempo:** Fast
-- **Mood:** Urgent, intense
-- **Trigger:** In active combat engagement
-
-#### Mission Success
-- **Intensity:** Moderate
-- **Tempo:** Victory pace
-- **Mood:** Triumphant
-- **Trigger:** Mission objective completed
-
-#### Mission Failure
-- **Intensity:** Low
-- **Tempo:** Slow
-- **Mood:** Defeat
-- **Trigger:** Mission failed
-
-### Music Settings
-
-**Settings → Audio → Music:**
-- **Music Volume** — 0-100%
-- **Dynamic Music** — On/Off (enable adaptive music)
-- **Music Intensity** — 0-100% (how intense combat music gets)
+Gear up/down uses a one-shot sound and an editable cooldown. Repeated input during the transition does not stack the gear animation and audio indefinitely. The same gear state also enables the jet's landing-assist behavior.
 
 ---
 
-## Audio Settings & Configuration
+## Water and Canopy FX
 
-### Audio Channels
+The jet can trace for configured water surfaces and spawn Niagara or Cascade surface FX. Runtime cleanup prevents old particle components from remaining behind after the jet has flown away.
 
-| Channel | Default | Range | Purpose |
-|---------|---------|-------|---------|
-| **Master** | 80% | 0-100% | Overall volume |
-| **Engine** | 70% | 0-100% | Jet engine sounds |
-| **Weapons** | 75% | 0-100% | Gun/rocket/missile sounds |
-| **Radio** | 80% | 0-100% | Communications |
-| **Warnings** | 90% | 0-100% | Alert tones |
-| **Music** | 60% | 0-100% | Background music |
-| **Ambience** | 50% | 0-100% | Environmental sounds |
+For Cascade emitters, particle lifetime alone does not stop a continuously looping emitter. Configure a finite emitter loop count when using a one-shot water impact.
 
-### Audio Presets
-
-**Balanced:**
-- All channels at moderate levels
-- Good for general gameplay
-
-**Immersive:**
-- Engine and ambience enhanced
-- Warnings slightly reduced
-- Music increased
-- Realistic military audio emphasis
-
-**Communication:**
-- Radio and warnings maximized
-- Music and ambience reduced
-- Engine slightly quieter
-- Best for competitive play
-
-**Custom:**
-- User-defined levels per channel
-
-### Audio Hardware
-
-- **Speakers** — Select output device
-- **Headphones** — Optimize for headphone playback
-- **Surround Sound** — Enable 5.1/7.1 (if supported)
-- **Mono Audio** — For accessibility (accessibility settings)
+Cockpit glass supports rain/drop feedback when interacting with configured water/cloud conditions. The effect is local presentation and does not need to be replicated as gameplay state.
 
 ---
 
-## Visual Effects (FX) System
+## Thunderstorm Actor
 
-### Exhaust Effects
+`AAT_GM_ThunderFXActor` provides configurable thunder presentation with:
 
-Exhaust rendering uses multiple methods (selectable):
+- Thunder audio
+- Billboard/light flash
+- Optional post-process flash
+- Volume and pitch controls
+- Optional distance-based sound delay
 
-#### Static Mesh Exhaust
-- **Performance:** Very fast
-- **Appearance:** Static mesh trails
-- **Realism:** Lower
-- **Best for:** Lower-end hardware
-
-#### Niagara FX Exhaust
-- **Performance:** Medium
-- **Appearance:** Particle-based trails
-- **Realism:** Medium-high
-- **Best for:** Mid-range hardware
-
-#### Combined Exhaust
-- **Performance:** Slower
-- **Appearance:** Mesh + particles combined
-- **Realism:** High
-- **Best for:** High-end hardware
-
-**Setting:** Edit → Project Settings → Engine → Jet Combat → Exhaust Type
-
-### Water Interaction
-
-#### Landing Gear Water Spray
-- **Trigger:** Flying low over water
-- **Effect:** Spray particles from water surface
-- **Intensity:** Varies with speed and altitude
-- **Visual:** Visible behind aircraft
-
-#### Cockpit Canopy Droplets
-- **Trigger:** Flying through rain or near water
-- **Effect:** Droplets on canopy glass
-- **Wipers:** Can clear droplets during landing
-- **Realism:** Adds immersion
-
-#### Wake Trails
-- **Effect:** Water disturbance pattern visible behind aircraft
-- **Trigger:** Flying low over water
-- **Visual:** Enhances low-altitude flying
-
-### Impact Effects
-
-#### Gun Impact Flashes
-- **Trigger:** Gun rounds hitting target
-- **Effect:** Muzzle flash and impact spark
-- **Color:** Yellow/orange based on materials
-- **Visibility:** Visible to all players in multiplayer
-
-#### Missile Impact Explosions
-- **Trigger:** Missile detonation
-- **Effect:** Large explosion with debris
-- **Scale:** Larger for direct hits
-- **Audio:** Matches visual effect
-
-#### Ground Impact Dust
-- **Trigger:** Landing gear contact with ground
-- **Effect:** Dust cloud kicked up
-- **Intensity:** Depends on landing speed
-- **Spread:** Spreads behind aircraft during takeoff
-
-### Environmental Effects
-
-#### Storm/Rain Particles
-- **Trigger:** In stormy weather
-- **Effect:** Rain/sleet particles visible in air
-- **Density:** Intensity varies by weather setting
-- **Cockpit view:** Rain on canopy glass
-
-#### Clouds & Sky
-- **Cumulus clouds** — Puffy fair-weather clouds
-- **Stratus clouds** — Low overcast
-- **Fog** — Reduced visibility
-- **Lighting:** Changes with time of day
-
-#### Sun/Sky Lighting
-- **Time of day:** Affects lighting color and intensity
-- **Shadows:** Real-time shadows on terrain and buildings
-- **Lens flares:** Optional sun lens flare effect
-
-### Visual Settings for FX
-
-**Settings → Graphics → Effects:**
-- **Particle Quality** — Low/Medium/High/Ultra
-- **Water Simulation** — On/Off
-- **Bloom Effect** — On/Off
-- **Motion Blur** — Amount (0-100%)
-- **Depth of Field** — On/Off
-- **Screen Space Reflections** — On/Off
+Playback is guarded so overlapping thunder requests do not produce doubled sound. The actor is level presentation, not replicated combat state.
 
 ---
 
-## Audio-Visual Synchronization
+## Mission Radio and Music
 
-### Synchronized Effects
+The mission director owns sequential radio and action music:
 
-Effects and audio are precisely timed:
-- **Weapon fire** — Audio matches muzzle flash
-- **Explosions** — Sound matches visual explosion
-- **Engine sounds** — Correlate with throttle position
-- **Warnings** — Audio and visual HUD feedback simultaneous
+- Each radio beat has before/after delays.
+- Mission-start and waypoint-triggered sequences are supported.
+- Action music has Blueprint-editable volume and fade times.
+- Music can begin when a waypoint activates combat.
+- Radio and music stop on mission completion, failure, or mission stop.
 
-### Latency Compensation
-
-Network latency compensated for:
-- **Audio cues** — Played slightly ahead of visual
-- **Impact sounds** — Timed to visual impact point
-- **Dialogue** — Lip-sync with visual animation
+This is a configured cue workflow, not an automatic intensity-analysis or layered adaptive soundtrack system.
 
 ---
 
-## Audio Recording & Customization
+## Destruction and Impact FX
 
-### Recording Game Audio
+The supplied project includes reusable explosion, impact, weapon, water, and target-destruction presentation. Ground target destruction is server-authoritative and replicated so clients see the destroyed state as well as the FX.
 
-Settings → Audio → Recording:
-- **Record to file** — Optional audio recording
-- **Format:** WAV/OGG
-- **Quality:** Lossless or compressed
-- **Usage:** Review gameplay, create videos
-
-### Custom Audio Mods
-
-Advanced users can:
-- **Replace audio files** — Place custom files in content/audio/
-- **Modify audio settings** — Config files for audio properties
-- **Create radio callouts** — Custom mission briefings
-- **Design custom music** — Replace background music
+Gameplay damage and destruction state should replicate. Short-lived cosmetic effects can be reconstructed locally from the replicated event when appropriate.
 
 ---
 
-## Audio Troubleshooting
+## Audio Settings
 
-### No Sound
+The settings subsystem supports these volume groups when the matching sound classes/mix are assigned:
 
-**Cause:** Audio disabled or volume muted
-**Solution:**
-1. Check Settings → Audio → Master Volume (should be > 0)
-2. Verify speakers/headphones connected
-3. Check OS audio settings
-4. Restart application
+- Master
+- Music
+- SFX
+- UI
+- Engine
+- Weapon
 
-### Audio Crackling/Distortion
-
-**Cause:** Audio buffer underrun or driver issue
-**Solution:**
-1. Reduce audio quality in settings
-2. Update audio drivers
-3. Lower frame rate
-4. Restart application
-
-### One-Sided Audio (Only Left or Right)
-
-**Cause:** Mono mode enabled or audio device issue
-**Solution:**
-1. Verify stereo is enabled: Settings → Audio → Mono Audio = Off
-2. Check speaker/headphone connections
-3. Test with different audio output device
-
-### Music Not Changing Dynamically
-
-**Cause:** Dynamic music disabled or music volume too low
-**Solution:**
-1. Enable dynamic music: Settings → Audio → Dynamic Music = On
-2. Increase music volume
-3. Verify intensity setting is not at 0%
-
-### Radio Callouts Not Playing
-
-**Cause:** Radio volume too low or dialogue suppressed
-**Solution:**
-1. Increase radio volume: Settings → Audio → Radio Volume
-2. Verify dialogue is not muted
-3. Check in-game radio is not disabled
-4. Restart mission
+The Audio Settings page also exposes a music-enabled toggle. Exact defaults are project assets/settings data and may be changed by the seller or buyer.
 
 ---
 
-## Audio Tips
+## Multiplayer Guidelines
 
-1. **Use headphones** — Better 3D audio positioning
-2. **Adjust warning volume** — Keep high for safety
-3. **Balance levels** — Don't let one channel overwhelm others
-4. **Test surroundsound** — If available, enables immersion
-5. **Enable dynamic music** — Enhances engagement
-6. **Mute when not gaming** — Reduces distraction
-7. **Use audio presets** — Start with preset, customize from there
-8. **Monitor audio input** — Ensure mic is muted during gameplay
+- Use positional exterior audio for remote jets and AI.
+- Keep cockpit-only sounds local to the owning player.
+- Use cooldowns for warnings, thunder, flyby, gun release, and gear transitions.
+- Do not replicate continuous audio every frame; replicate the gameplay state that drives it.
+- Apply attenuation to AI weapon and flare cues so distant actions do not sound close.
+- Profile the combined exhaust mode and dense FX scenes on both host and client.
 
----
+See also:
 
-## Next Steps
-
-- **Customize audio:** Settings → Audio
-- **Adjust FX:** Settings → Graphics → Effects
-- **Start mission:** Single Player → Campaign
-
----
-
-**Hear the sound. Feel the impact. Experience the immersion.**
+- [Weapons and Targeting](WEAPONS_AND_TARGETING.md)
+- [Mission System](MISSION_SYSTEM.md)
+- [Settings Reference](SETTINGS_REFERENCE.md)
