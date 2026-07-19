@@ -45,6 +45,36 @@ Check:
 
 Test offline, private, and public travel separately. A failure in every non-mission mode usually indicates a shared travel/loading path rather than EOS itself.
 
+## Input and Controllers
+
+### A changed binding is lost after restarting
+
+- Use **Apply Settings** to activate the pending bindings, then **Save Settings** to persist them.
+- Bindings are stored per local player in the `AT_GM_InputBindings` save slot; they are not replicated account or server data.
+- Confirm the settings screen belongs to the correct local player and that the packaged build can write to its Saved directory.
+
+### Moving a stick changes menu selection instead of capturing the axis
+
+- Click the desired binding slot and wait for its short capture-arm delay before moving the stick.
+- Move the intended axis decisively and release it; minor resting drift is deliberately ignored.
+- If selection still moves first, check controller calibration and dead zones, then retry with the window focused.
+
+### One controller affects two packaged game windows
+
+Only the focused packaged window should consume gamepad input. Confirm `Slate.RequireFocusForGamepadInput=1`, click the intended window, and repeat the test. This is especially important when testing server and client on one PC.
+
+### A PlayStation controller or HOTAS is not detected
+
+The binding screen can capture only Unreal `FKey` values supplied by the active input backend. A PlayStation controller may require a stable USB/Bluetooth connection or a compatible platform input layer such as Steam Input. A HOTAS may require Unreal's Raw Input support, a device profile, and axis calibration. The runtime binding UI does not by itself add a missing device driver or backend mapping.
+
+### Thunder repeatedly appears too close or directly overhead
+
+- Use the world-centered placement mode and position the Thunder actor near the intended storm region.
+- Increase both minimum and maximum horizontal distance for a wider map.
+- Tune the weighted spawn profiles for left/right, near/far, and low/high coverage.
+- Adjust profile scale ranges and material weights for more visual variation.
+- Avoid the legacy player-relative mode when one shared multiplayer storm field is required.
+
 ## EOS and Sessions
 
 ### Public multiplayer is disabled

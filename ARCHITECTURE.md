@@ -46,6 +46,7 @@ Both plugins are Win64 runtime plugins for Unreal Engine 5.7. `AT_GM` can contai
 - AirTGT and GroundTGT actors
 - loading, pause, briefing, scoreboard, and match widgets
 - thunder, global post-process, and other game-level presentation actors
+- local-player runtime input binding, validation, persistence, and settings integration
 
 Representative classes include:
 

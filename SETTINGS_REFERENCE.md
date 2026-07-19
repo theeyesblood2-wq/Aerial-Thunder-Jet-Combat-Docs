@@ -1,6 +1,6 @@
 # Settings Reference
 
-Aerial Thunder stores player-facing configuration through the AT_GM settings system. The root settings UI is divided into Graphics, Audio, Visual, Controls, UI, and Profile sections.
+Aerial Thunder stores player-facing configuration through the AT_GM settings system. The root settings UI includes Graphics, Audio, Visual, Controls, Key Bindings, UI, and Profile sections.
 
 This page documents settings that exist in the supplied project. Jet component tuning is covered by the system-specific guides because those values belong to Jet_C_MT Blueprint components rather than the root user-settings save.
 
@@ -75,7 +75,9 @@ Volume values are normalized user settings. Individual jet and AI audio componen
 | Invert Pitch | On/Off | Inverts pitch input |
 | Invert Yaw | On/Off | Inverts yaw input |
 
-Input actions and axes are not hardcoded by the documentation. Projects can remap them through Unreal input configuration and call the exposed jet actions.
+## Key Bindings
+
+Runtime bindings expose Primary and Secondary slots for the packaged named action/axis mappings. Apply changes the current session, Save persists local overrides, Reset Bindings restores packaged defaults, and right-click resets one selected slot. Duplicate assignments are rejected. See [Input and Controls](INPUTS.md) for the complete workflow and Xbox-compatible defaults.
 
 ## UI
 

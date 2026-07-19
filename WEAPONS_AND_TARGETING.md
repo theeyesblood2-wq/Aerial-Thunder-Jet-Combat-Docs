@@ -142,6 +142,9 @@ Key rules:
 - Remote weapon sounds use distance and attenuation rules.
 - Projectiles and weapon state replicate to other players.
 - Killer information is passed to the killed-in-action and spectating workflow.
+- Human hard-lock warning is delivered only to the targeted player's owning client.
+- A successful human missile launch sends the separate fired warning only to that missile victim.
+- AI and human warning paths remain separated to prevent duplicate warnings.
 
 Poor internet conditions can still make remote rockets, missiles, or flares appear slightly delayed. Validate changes in both local multiplayer and real EOS sessions.
 

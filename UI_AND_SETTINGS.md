@@ -88,7 +88,7 @@ Like the root menu, the transition animation is assigned in the widget defaults.
 
 ## Settings Pages
 
-`UAT_GM_SettingsPanelWidget` supports Apply, Save, Reset, category navigation, unsaved-change tracking, and optional widget-name bindings.
+`UAT_GM_SettingsPanelWidget` supports Apply, Save, Reset, category navigation, unsaved-change tracking, optional widget-name bindings, and a dedicated runtime Key Bindings page.
 
 ### Graphics
 
@@ -135,7 +135,18 @@ The assigned sound mix and sound classes determine which assets each slider cont
 - Invert pitch
 - Invert yaw
 
-Control modes are Arcade, Normal, Advanced, and Realsim. Input actions/axes remain part of the project input setup; this settings page does not provide a full runtime key-rebinding editor.
+Control modes are Arcade, Normal, Advanced, and Realsim.
+
+### Key Bindings
+
+- Dynamic rows for packaged action and axis definitions
+- Primary and Secondary slots
+- Keyboard, mouse, gamepad button, trigger, and analog-stick capture
+- Duplicate assignment protection
+- Apply, Save, full Reset Bindings, and right-click single-slot reset
+- Local-only persistence per player
+
+The page is available from root Settings before gameplay. Pause-menu integration remains deferred.
 
 ### UI
 

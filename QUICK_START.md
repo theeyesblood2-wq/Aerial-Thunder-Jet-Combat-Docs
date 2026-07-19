@@ -83,6 +83,8 @@ From the main menu:
 
 For every configured input, see [Input and Controls](INPUTS.md).
 
+Before flying, open **Settings > Key Bindings** to review or change the packaged keyboard, mouse, and Xbox-compatible defaults. Use Apply for the current session, Save to persist, right-click to reset one slot, or Reset Bindings to restore the complete packaged layout.
+
 ### Airborne Start
 
 An airborne start spawns and possesses the selected jet in flight. Apply throttle, use gentle pitch and roll inputs, and press **H** when you want auto-level assistance.
