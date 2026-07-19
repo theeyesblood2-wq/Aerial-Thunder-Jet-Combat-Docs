@@ -34,7 +34,7 @@ The included environments are functional examples. Production releases will norm
 ## Quick Links
 
 - **[Quick Start Guide](QUICK_START.md)** - Installation, first launch, and first flight
-- **[Input and Controls](INPUTS.md)** - Default keyboard and mouse mappings
+- **[Input and Controls](INPUTS.md)** - Runtime rebinding and keyboard, mouse, Xbox-compatible defaults
 - **[Architecture Overview](ARCHITECTURE.md)** - Plugin ownership and core systems
 - **[Flight and Cameras](FLIGHT_AND_CAMERAS.md)** - Flight presets, cameras, and landing support
 - **[Weapons and Targeting](WEAPONS_AND_TARGETING.md)** - Gun, rockets, missiles, flares, and targeting
@@ -128,6 +128,8 @@ The included environments are functional examples. Production releases will norm
 - Saved username, region, location, and EOS login state
 - Configurable screen transitions and startup logo animation
 - Selectable jet exhaust visual mode
+- Runtime keyboard, mouse, gamepad button, trigger, and analog-stick rebinding
+- Primary/Secondary slots, local save, full reset, and right-click single-slot reset
 
 ### Audio and FX
 
@@ -136,7 +138,7 @@ The included environments are functional examples. Production releases will norm
 - Engine, afterburner, weapon, flare, warning, flyby, and gear audio
 - Distance-limited remote weapon and flare audio
 - Mission radio and action music sequencing
-- Thunder actor with overlap protection
+- Shared world-centered Thunder actor with weighted placement profiles, material variants, and overlap protection
 - Water-surface effects and cockpit rain/drip feedback
 - Warning cooldowns that prevent repeated audio spam
 
@@ -225,6 +227,8 @@ Public internet multiplayer requires your own Epic Online Services product, sand
 | Skip mission intro | Space, while an intro is active |
 
 These mappings are defined in the example project's input configuration. The C++ systems also expose callable functions for custom Blueprint or Enhanced Input wiring.
+
+Players can change these mappings from **Settings > Key Bindings**, including keyboard, mouse, and supported gamepad inputs. See [Inputs](INPUTS.md) for the packaged Xbox-compatible layout, save/reset behavior, and device notes.
 
 ---
 

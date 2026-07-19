@@ -95,6 +95,10 @@ The server owns gameplay truth. Clients request actions and receive authoritativ
 
 Cosmetic presentation is kept local where appropriate. For example, hit feedback intended only for the shooter should not become globally repeated audio.
 
+Input-binding overrides belong to `UAT_GM_InputBindingSubsystem`, a `ULocalPlayerSubsystem`. They are saved locally and never replicated. In same-PC packaged testing, `Slate.RequireFocusForGamepadInput=1` ensures only the focused window consumes the physical controller.
+
+The world-centered Thunder actor is server scheduled: authority selects one strike and multicasts it so all clients share its position and material while their billboards face their own cameras.
+
 ## Network Smoothing
 
 The jet movement system includes multiplayer smoothing for remote aircraft. Local and cross-country testing has shown generally clean own-jet movement and usable remote movement.
@@ -121,6 +125,10 @@ These effects depend on latency, packet timing, frame rate, and the host connect
 7. Crash both players and verify respawn.
 8. Verify exhaust after respawn.
 9. Verify kills, suicide feedback, killer card, and scores.
+10. Verify controller input affects only the focused window.
+11. Verify saved bindings survive restart and travel.
+12. Verify lock/fired warnings reach only the missile victim.
+13. Verify host and client share the same Thunder strike/material.
 
 ### Public EOS test
 

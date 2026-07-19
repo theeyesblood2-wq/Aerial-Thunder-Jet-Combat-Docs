@@ -70,6 +70,8 @@ Automatic and manual targeting are intentionally separate:
 
 Warning playback includes cooldown/state protection so repeated updates do not restart the same phrase every frame. The implemented feedback covers threat and flight warnings such as missile events and altitude/pull-up conditions. Warning tuning remains Blueprint editable on the jet components.
 
+AI and human-player missile paths both warn only the targeted victim. Standard player hard lock sends the lock warning to that victim; a successful missile launch sends the separate fired warning to the missile victim. Shooter and unrelated clients do not receive those cockpit warnings.
+
 The project does not implement fuel-low or engine-overheat warning systems.
 
 ---
@@ -112,8 +114,12 @@ Cockpit glass supports rain/drop feedback when interacting with configured water
 - Optional post-process flash
 - Volume and pitch controls
 - Optional distance-based sound delay
+- A stable world-centered storm origin based on the actor's placed BeginPlay transform
+- Eleven weighted far/right/left/high/low/front/rear placement profiles
+- Signed height, distance, yaw, and random scale tuning per profile
+- Weighted material variants with per-material X/Y sizing and repeat prevention
 
-Playback is guarded so overlapping thunder requests do not produce doubled sound. The actor is level presentation, not replicated combat state.
+The server selects one complete event and Reliable NetMulticast sends the shared world position, material index, scale, intensity, duration, and sound delay to every client. The billboard faces each local camera, but camera/player position is not used by the default world-centered placement mode. Playback is guarded so overlapping requests do not produce doubled sound. Player-centered placement remains an optional legacy mode.
 
 ---
 

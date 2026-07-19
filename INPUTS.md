@@ -2,9 +2,9 @@
 
 ## Overview
 
-Aerial Thunder ships with keyboard and mouse mappings in `Config/DefaultInput.ini`. The project currently uses named action and axis mappings through Unreal's input settings. The default player input and input component classes are Enhanced Input classes, but the supplied gameplay bindings are the named mappings listed below.
+Aerial Thunder ships with keyboard, mouse, and Xbox-compatible gamepad mappings in `Config/DefaultInput.ini`. Gameplay uses the existing named action/axis mappings through Enhanced Player Input classes. Players can change these mappings at runtime from **Root Menu > Settings > Key Bindings**.
 
-You can change the keys in:
+Developers can change packaged defaults in:
 
 ```text
 Edit > Project Settings > Engine > Input
@@ -106,20 +106,44 @@ Recommended workflow:
 4. Test airborne start, grounded start, every camera, targeting modes, and pause/menu input.
 5. Test both a standalone session and a two-player listen-server session.
 
+### Runtime Key Bindings
+
+The root Settings screen creates one row per packaged action/axis definition. Each row provides independent **Primary** and **Secondary** slots.
+
+- Select a slot, then press a keyboard, mouse, gamepad button, trigger, or analog-stick direction.
+- Analog capture uses an arm delay and threshold so stick drift does not immediately select an axis.
+- Duplicate-key validation rejects conflicting assignments.
+- **Apply Settings** changes the current session.
+- **Save Settings** persists local overrides in the `AT_GM_InputBindings` save slot.
+- Right-click a populated slot to reset only that slot.
+- **Reset Bindings** restores the complete packaged keyboard/mouse/gamepad layout.
+- Overrides are local-player data and are never replicated to other multiplayer players.
+- Bindings are reapplied after travel when the LocalPlayer receives a new PlayerController.
+
+The supplied editor is available from the root menu before gameplay. Pause-menu key-binding integration is intentionally not included in the current checkpoint.
+
 ### Mouse Sensitivity
 
 The supplied input configuration uses a sensitivity of `0.07` for Mouse X, Mouse Y, and Mouse 2D. Player-facing control settings can further affect the feel of camera and flight input.
 
-### Gamepad and Custom Controllers
+### Xbox-Compatible Gamepad Defaults
 
-The supplied documentation does not claim a complete default gamepad layout. Unreal exposes gamepad axis configuration, but developers should add and test their own action and axis mappings for the target controller.
+| Function | Default gamepad input |
+|---|---|
+| Pitch / Roll | Left Stick Y / X |
+| Camera Look | Right Stick Y / X |
+| Throttle Down / Up | Left / Right Trigger |
+| Yaw Left / Right | Left / Right Shoulder |
+| Gun / Rocket / Missile | Bottom / Right / Left Face Button |
+| Auto Targeting | Top Face Button |
+| Manual Targeting / Toggle | D-pad Up / Right |
+| Gear / Guide | D-pad Down / Left |
+| Toggle View / Flares | Left / Right Thumbstick Button |
+| Camera Reset | Special Left |
 
-When adding a controller:
+Generic Unreal `Gamepad_*` keys support Xbox One, Xbox Series, Elite, and normal XInput-compatible devices. Same-PC packaged tests use `Slate.RequireFocusForGamepadInput=1`; only the focused game window receives the physical controller.
 
-1. Reuse the existing mapping names where possible.
-2. Add dead zones appropriate to the device.
-3. Test pitch, roll, yaw, throttle, camera, weapons, and menu focus separately.
-4. Verify behavior in multiplayer as both host and joined client.
+PS4/PS5 and HOTAS support is not guaranteed by this checkpoint. The binding UI can capture any `FKey` delivered by Unreal, but the device still requires a stable Windows/Unreal input backend. HOTAS devices commonly need Raw Input plus device-specific calibration, deadzones, and axis testing.
 
 ### Migrating to Input Actions and Mapping Contexts
 
